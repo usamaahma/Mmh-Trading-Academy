@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   Mail,
@@ -8,7 +10,6 @@ import {
   Globe,
   Send,
 } from "lucide-react";
-// Stable Icons from FontAwesome (React-Icons)
 import {
   FaWhatsapp,
   FaTelegramPlane,
@@ -21,149 +22,120 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#050505] text-gray-400 border-t border-yellow-500/20 pt-16 pb-8 font-sans">
+    <footer className="bg-[#010409] text-slate-400 border-t border-cyan-500/10 pt-16 pb-8 font-sans">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        {/* 🔹 TOP SECTION */}
+
+        {/* 🔹 TOP SECTION: BRAND & NEWSLETTER */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16 border-b border-white/5 pb-16">
-          <div className="space-y-6">
+
+          {/* LOGO & DESCRIPTION (Centered) */}
+          <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-6">
             <div className="flex flex-col leading-tight cursor-pointer group">
-              <span className="text-3xl font-black tracking-tighter text-white group-hover:text-yellow-500 transition-colors">
-                MMH{" "}
-                <span className="text-yellow-500 group-hover:text-white">
-                  TRADING
-                </span>
+              <span className="text-3xl font-black tracking-tighter text-white group-hover:text-cyan-400 transition-colors uppercase">
+                MMH <span className="text-cyan-400 group-hover:text-white transition-colors">TRADING</span>
               </span>
-              <span className="text-[10px] tracking-[0.4em] uppercase text-gray-500 font-bold -mt-1">
+              <span className="text-[9px] tracking-[0.4em] uppercase text-slate-500 font-bold text-center lg:text-left">
                 Academy of Excellence
               </span>
             </div>
-            <p className="text-sm leading-relaxed max-w-sm">
-              Pakistan leading trading academy empowering thousands of students
-              with SMC, ICT, and advanced market analysis.
+            <p className="text-[12px] leading-relaxed max-w-sm text-slate-500">
+              Pakistan's premier trading protocol. Empowering the next generation of institutional traders through SMC, ICT, and algorithmic analysis.
             </p>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-yellow-500 font-bold text-[10px] uppercase">
-                <ShieldCheck size={16} /> Verified Academy
+            <div className="flex flex-wrap justify-center lg:justify-start items-center gap-4">
+              <div className="flex items-center gap-2 text-cyan-500 font-black text-[9px] uppercase tracking-widest bg-cyan-500/5 px-3 py-1.5 rounded-full border border-cyan-500/10">
+                <ShieldCheck size={14} /> Verified Protocol
               </div>
-              <div className="flex items-center gap-2 text-yellow-500 font-bold text-[10px] uppercase border-l border-white/10 pl-4">
-                <Globe size={16} /> Global Presence
+              <div className="flex items-center gap-2 text-slate-400 font-black text-[9px] uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                <Globe size={14} /> Global Presence
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 lg:col-span-1">
-            <div className="space-y-4">
-              <h4 className="text-white font-bold uppercase tracking-widest text-[11px]">
+          {/* QUICK LINKS */}
+          <div className="grid grid-cols-2 gap-8">
+            <div className="space-y-5">
+              <h4 className="text-white font-black uppercase tracking-[0.2em] text-[10px]">
                 Navigation
               </h4>
-              <ul className="space-y-3 text-xs font-medium">
-                <li className="hover:text-yellow-500 cursor-pointer transition flex items-center gap-2 group">
-                  <ArrowRight
-                    size={10}
-                    className="text-yellow-500 opacity-0 group-hover:opacity-100 transition-all"
-                  />{" "}
-                  Signals
-                </li>
-                <li className="hover:text-yellow-500 cursor-pointer transition flex items-center gap-2 group">
-                  <ArrowRight
-                    size={10}
-                    className="text-yellow-500 opacity-0 group-hover:opacity-100 transition-all"
-                  />{" "}
-                  Brokers
-                </li>
-                <li className="hover:text-yellow-500 cursor-pointer transition flex items-center gap-2 group">
-                  <ArrowRight
-                    size={10}
-                    className="text-yellow-500 opacity-0 group-hover:opacity-100 transition-all"
-                  />{" "}
-                  Courses
-                </li>
+              <ul className="space-y-3 text-[11px] font-bold uppercase tracking-wider">
+                {["Signals", "Brokers", "Courses", "Analysis"].map((item) => (
+                  <li key={item} className="hover:text-cyan-400 cursor-pointer transition-all flex items-center gap-2 group">
+                    <ArrowRight size={10} className="text-cyan-500 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                    {item}
+                  </li>
+                ))}
               </ul>
             </div>
-            <div className="space-y-4">
-              <h4 className="text-white font-bold uppercase tracking-widest text-[11px]">
+            <div className="space-y-5">
+              <h4 className="text-white font-black uppercase tracking-[0.2em] text-[10px]">
                 Legal
               </h4>
-              <ul className="space-y-3 text-xs font-medium">
-                <li className="hover:text-yellow-500 cursor-pointer transition">
-                  Risk Disclosure
-                </li>
-                <li className="hover:text-yellow-500 cursor-pointer transition">
-                  Privacy Policy
-                </li>
-                <li className="hover:text-yellow-500 cursor-pointer transition">
-                  Terms of Service
-                </li>
+              <ul className="space-y-3 text-[11px] font-bold uppercase tracking-wider">
+                {["Risk Disclosure", "Privacy Policy", "Terms of Service"].map((item) => (
+                  <li key={item} className="hover:text-cyan-400 cursor-pointer transition-all">
+                    {item}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
 
-          <div className="space-y-6">
-            <h4 className="text-white font-bold uppercase tracking-widest text-[11px]">
-              Join our Gold List
-            </h4>
+          {/* NEWSLETTER */}
+          <div className="space-y-6 bg-white/5 p-6 rounded-2xl border border-white/5">
+            <div className="space-y-2">
+              <h4 className="text-white font-black uppercase tracking-[0.2em] text-[10px]">
+                Institutional Updates
+              </h4>
+              <p className="text-[10px] text-slate-500 uppercase tracking-widest">Join our private distribution list.</p>
+            </div>
             <div className="relative">
               <input
                 type="email"
-                placeholder="Email Address"
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-5 text-xs focus:outline-none focus:border-yellow-500 transition-colors text-white"
+                placeholder="TRADER@EMAIL.COM"
+                className="w-full bg-black border border-white/10 rounded-lg py-3 px-4 text-[10px] font-bold tracking-widest focus:outline-none focus:border-cyan-500 transition-colors text-white placeholder:text-slate-700"
               />
-              <button className="absolute right-1 top-1 bottom-1 bg-yellow-500 hover:bg-yellow-600 text-black px-4 rounded-lg flex items-center justify-center transition shadow-lg shadow-yellow-500/10">
+              <button className="absolute right-1 top-1 bottom-1 bg-cyan-500 hover:bg-white text-black px-4 rounded-md flex items-center justify-center transition-all duration-300">
                 <Send size={14} />
               </button>
             </div>
           </div>
         </div>
 
-        {/* 🔹 MIDDLE SECTION */}
+        {/* 🔹 MIDDLE SECTION: CONTACT DEETS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 items-center">
           <div className="flex items-center gap-4 group cursor-pointer">
-            <div className="p-3 bg-yellow-500/10 rounded-xl group-hover:bg-yellow-500 transition-all duration-300">
-              <Phone
-                className="text-yellow-500 group-hover:text-black"
-                size={18}
-              />
+            <div className="p-3 bg-cyan-500/10 rounded-lg group-hover:bg-cyan-500 transition-all duration-500">
+              <Phone className="text-cyan-500 group-hover:text-black" size={16} />
             </div>
             <div>
-              <p className="text-[9px] uppercase font-bold text-gray-500">
-                Call Support
-              </p>
-              <p className="text-white text-sm font-bold tracking-wider">
-                +92 300 0000000
-              </p>
+              <p className="text-[8px] uppercase font-black text-slate-600 tracking-tighter">Support Line</p>
+              <p className="text-white text-xs font-black tracking-[0.1em]">+92 300 0000000</p>
             </div>
           </div>
 
           <div className="flex items-center gap-4 group cursor-pointer md:justify-center">
-            <div className="p-3 bg-yellow-500/10 rounded-xl group-hover:bg-yellow-500 transition-all duration-300">
-              <Mail
-                className="text-yellow-500 group-hover:text-black"
-                size={18}
-              />
+            <div className="p-3 bg-cyan-500/10 rounded-lg group-hover:bg-cyan-500 transition-all duration-500">
+              <Mail className="text-cyan-500 group-hover:text-black" size={16} />
             </div>
             <div>
-              <p className="text-[9px] uppercase font-bold text-gray-500">
-                Email Us
-              </p>
-              <p className="text-white text-sm font-bold tracking-wider">
-                support@mmh.com
-              </p>
+              <p className="text-[8px] uppercase font-black text-slate-600 tracking-tighter">Direct Inquiry</p>
+              <p className="text-white text-xs font-black tracking-[0.1em]">support@mmhtrading.com</p>
             </div>
           </div>
 
-          {/* SOCIAL ICONS (USING REACT-ICONS FOR STABILITY) */}
-          <div className="flex items-center gap-3 md:justify-end">
+          {/* SOCIALS */}
+          <div className="flex items-center gap-2 md:justify-end">
             {[
-              { icon: <FaTelegramPlane size={18} />, link: "#" },
-              { icon: <FaWhatsapp size={18} />, link: "#" },
-              { icon: <FaInstagram size={18} />, link: "#" },
-              { icon: <FaYoutube size={18} />, link: "#" },
-              { icon: <FaFacebookF size={16} />, link: "#" },
+              { icon: <FaTelegramPlane size={16} />, link: "#" },
+              { icon: <FaWhatsapp size={16} />, link: "#" },
+              { icon: <FaInstagram size={16} />, link: "#" },
+              { icon: <FaYoutube size={16} />, link: "#" },
+              { icon: <FaFacebookF size={14} />, link: "#" },
             ].map((social, i) => (
               <a
                 key={i}
                 href={social.link}
-                className="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-yellow-500 hover:text-black transition-all border border-white/5 hover:border-yellow-500"
+                className="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 hover:bg-cyan-500 text-slate-400 hover:text-black transition-all border border-white/5 hover:border-cyan-500 shadow-lg hover:shadow-cyan-500/20"
               >
                 {social.icon}
               </a>
@@ -171,16 +143,16 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* 🔹 BOTTOM SECTION */}
-        <div className="pt-8 border-t border-white/5 text-[10px] text-gray-600 uppercase tracking-[0.2em] flex flex-col md:flex-row justify-between items-center gap-4">
-          <p>© {currentYear} MMH Trading. Built for Success.</p>
+        {/* 🔹 BOTTOM SECTION: FOOTNOTE */}
+        <div className="pt-8 border-t border-white/5 text-[9px] text-slate-600 uppercase font-bold tracking-[0.2em] flex flex-col md:flex-row justify-between items-center gap-6">
+          <p>© {currentYear} MMH Protocol. All Systems Operational.</p>
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-1.5 text-yellow-500/50 hover:text-yellow-500 transition">
-              <TrendingUp size={12} /> High Accuracy
+            <span className="flex items-center gap-1.5 text-cyan-500/40 hover:text-cyan-500 transition-colors">
+              <TrendingUp size={12} /> Elite Performance
             </span>
-            <span className="hidden md:inline text-white/20">|</span>
-            <p className="max-w-[300px] text-center md:text-right leading-loose">
-              Trading involves risk. Invest wisely.
+            <span className="hidden md:inline text-white/5">|</span>
+            <p className="max-w-[400px] text-center md:text-right leading-loose opacity-50 italic">
+              Risk Warning: Trading involves significant financial exposure. Execution requires precision.
             </p>
           </div>
         </div>

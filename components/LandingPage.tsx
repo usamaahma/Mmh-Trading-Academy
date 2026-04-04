@@ -1,414 +1,369 @@
-import React from "react";
+"use client";
+
+import React, { useRef } from "react";
+import { playfair, poppins } from "@/lib/fonts";
 import {
-  TrendingUp,
-  Play,
   ArrowRight,
-  CheckCircle2,
+  TrendingUp,
   Zap,
-  Globe,
-  Star,
-  Lock,
-  MousePointer2,
-  Percent,
-  LineChart,
   ShieldCheck,
   Terminal,
-  Activity, // Fixed: Added missing import
-  UserCheck,
+  Activity,
   BarChart3,
+  ChevronRight,
+  Cpu,
+  Layers,
+  History,
+  Target,
+  Globe,
+  Coins,
+  Flame,
+  Search,
+  MousePointer2,
+  Lock,
+  Radio,
 } from "lucide-react";
 
-export default function LandingPage() {
+export default function ProfessionalForexLanding() {
+  const scrollRef = useRef(null);
+
+  const slide = (direction) => {
+    if (scrollRef.current) {
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      const scrollTo =
+        direction === "left" ? scrollLeft - clientWidth : scrollLeft + clientWidth;
+      scrollRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
+    }
+  };
+
   return (
-    <main className="min-h-screen bg-[#FFFFFF] text-slate-900 pt-20 font-sans selection:bg-yellow-200 overflow-x-hidden">
-      {/* 🔹 HERO SECTION (God-Tier Terminal Design) */}
-
-      <section className="relative h-[calc(100vh-80px)] min-h-[650px] flex items-center px-6 bg-white overflow-hidden">
-        {/* 🔹 Back-Layer: Trading Grid & Glow */}
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`,
-              backgroundSize: "50px 50px",
-            }}
-          ></div>
-          <div className="absolute top-1/4 -right-1/4 w-[600px] h-[600px] bg-yellow-500/10 rounded-full blur-[130px]"></div>
-        </div>
-
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center relative z-10 w-full">
-          {/* 🔹 Left Content: The Hook */}
-          <div className="space-y-8 animate-in fade-in slide-in-from-left duration-1000">
-            <div className="inline-flex items-center gap-3 bg-slate-900 text-yellow-500 px-5 py-2 rounded-full shadow-lg border border-yellow-500/20">
-              <Activity size={14} className="animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-[0.3em]">
-                Institutional Data Stream Live
+    <main
+      className={`${poppins.className} min-h-screen bg-[#010409] text-slate-400 selection:bg-cyan-500/30 overflow-x-hidden`}
+    >
+      {/* 🔹 HERO SECTION */}
+      <section className="relative pt-32 md:pt-44 pb-16 px-4 md:px-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,_rgba(34,211,238,0.08)_0%,_transparent_50%)]"></div>
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-7 space-y-5 relative z-10">
+            <div className="inline-flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/20 px-2 py-1 rounded">
+              <Activity size={12} className="text-cyan-400 animate-pulse" />
+              <span className="text-[9px] font-bold tracking-widest uppercase text-cyan-400">
+                Institutional_Protocol_v4.2
               </span>
             </div>
-
-            {/* Typography Slightly Increased */}
-            <h1 className="text-6xl md:text-7xl lg:text-[4rem] font-black leading-[0.82] tracking-tighter uppercase italic text-slate-900">
-              Precision <br />
-              <span className="text-yellow-500 not-italic drop-shadow-sm">
-                Over Luck.
+            <h1 className={`${playfair.className} text-5xl md:text-8xl font-bold leading-[0.85] tracking-tight text-white uppercase`}>
+              TRADE THE <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-500">
+                FOOTPRINT.
               </span>
             </h1>
+            <p className="max-w-lg text-xs md:text-sm text-slate-500 uppercase tracking-wide leading-relaxed">
+              Stop trading patterns. Start trading liquidity. We decode the algorithm
+              used by Tier-1 banks to hunt retail stops.
+            </p>
+            <div className="flex gap-3 pt-4">
+              <button className="bg-cyan-500 text-black px-6 py-4 rounded font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-all">
+                Enter Terminal
+              </button>
+              <button className="bg-white/5 border border-white/10 text-white px-6 py-4 rounded font-bold text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">
+                System Audit
+              </button>
+            </div>
+          </div>
 
-            <div className="max-w-lg space-y-6">
-              <p className="text-lg text-slate-600 leading-snug font-bold tracking-tight">
-                MMH Trading Academy doesn't teach you to gamble. We teach you to{" "}
-                <span className="text-slate-900 underline decoration-yellow-500 decoration-[3px] underline-offset-4">
-                  read the footprints
-                </span>{" "}
-                of global banks using SMC protocols.
-              </p>
-
-              {/* Stats: Slightly more padding and bigger text */}
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  {
-                    label: "Win Rate",
-                    val: "87.4%",
-                    icon: <TrendingUp size={14} />,
-                  },
-                  { label: "Community", val: "5K+", icon: <Globe size={14} /> },
-                  {
-                    label: "Funding",
-                    val: "$10M+",
-                    icon: <ShieldCheck size={14} />,
-                  },
-                  { label: "Signals", val: "24/7", icon: <Zap size={14} /> },
-                ].map((stat, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 p-3.5 bg-slate-50 border border-slate-100 rounded-2xl"
-                  >
-                    <div className="text-yellow-600">{stat.icon}</div>
-                    <div>
-                      <p className="text-[9px] font-black uppercase text-slate-400 leading-none mb-1">
-                        {stat.label}
-                      </p>
-                      <p className="text-sm font-black text-slate-900 leading-none">
-                        {stat.val}
-                      </p>
-                    </div>
+          <div className="lg:col-span-5 bg-[#0D1117] border border-white/10 rounded-xl p-6 shadow-2xl relative">
+            <div className="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+              <span className="text-[10px] font-bold text-cyan-400 uppercase">Live_PNL_Pulse</span>
+              <span className="text-[10px] text-slate-600">UTC-4 (NY)</span>
+            </div>
+            <div className="space-y-4">
+              <div className="flex justify-between items-end">
+                <p className="text-2xl font-bold text-white tracking-tighter">+$14,280.44</p>
+                <p className="text-[10px] text-green-500 font-bold uppercase tracking-widest">Running Profit</p>
+              </div>
+              <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full bg-cyan-500 w-[78%] animate-pulse"></div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {["XAU", "NAS", "BTC"].map((p) => (
+                  <div key={p} className="p-2 bg-black/40 border border-white/5 rounded text-center">
+                    <p className="text-[8px] text-slate-500 uppercase">{p}</p>
+                    <p className="text-[10px] font-bold text-white">+2.1%</p>
                   </div>
                 ))}
               </div>
             </div>
-
-            {/* Buttons: Slightly larger for "Power" feel */}
-            <div className="flex flex-wrap gap-5 pt-2">
-              <button className="relative group overflow-hidden bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] transition-all hover:shadow-xl active:scale-95">
-                <span className="relative z-10 flex items-center gap-3 group-hover:text-black transition-colors">
-                  Enroll Now <ArrowRight size={16} />
-                </span>
-                <div className="absolute inset-0 bg-yellow-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-              </button>
-              <button className="flex items-center gap-4 bg-white border-2 border-slate-900 px-10 py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] hover:bg-slate-50 transition-all">
-                <Play size={16} fill="currentColor" /> Live Session
-              </button>
-            </div>
-          </div>
-
-          {/* 🔹 Right Content: Terminal (Back to 100% scale for impact) */}
-          <div className="relative lg:scale-105 origin-right hidden lg:block">
-            <div className="relative z-10 bg-slate-900 rounded-[2.5rem] p-8 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border-4 border-slate-800">
-              <div className="flex gap-2.5 mb-8 border-b border-slate-800 pb-4">
-                <div className="w-3 h-3 rounded-full bg-red-500/40"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500/40"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500/40"></div>
-                <span className="ml-4 text-[9px] font-bold text-slate-500 uppercase tracking-widest font-mono">
-                  Terminal: MICHAEL_H
-                </span>
-              </div>
-
-              <div className="space-y-7">
-                <div className="flex justify-between items-end">
-                  <h3 className="text-3xl font-black text-white italic tracking-tighter">
-                    XAUUSD{" "}
-                    <span className="text-yellow-500 not-italic text-xl">
-                      H1
-                    </span>
-                  </h3>
-                  <div className="text-right">
-                    <p className="text-2xl font-black text-green-500 tracking-tighter">
-                      2154.20
-                    </p>
-                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-tight">
-                      Market: High_Vol
-                    </p>
-                  </div>
-                </div>
-
-                <div className="relative h-44 bg-slate-800/50 rounded-2xl border border-slate-700 overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-around px-8 opacity-30">
-                    {[40, 70, 50, 85, 60, 95, 45, 80].map((h, i) => (
-                      <div
-                        key={i}
-                        className={`w-2 rounded-full ${i % 2 === 0 ? "bg-red-500" : "bg-green-500"}`}
-                        style={{ height: `${h}%` }}
-                      ></div>
-                    ))}
-                  </div>
-                  <div className="absolute top-[30%] left-0 w-full h-[25%] bg-yellow-500/10 border-y border-yellow-500/30 flex items-center px-4">
-                    <span className="text-[8px] font-black text-yellow-500 uppercase tracking-widest bg-slate-900 px-2 py-1 rounded">
-                      Order_Block
-                    </span>
-                  </div>
-                  <div className="absolute top-[25%] right-10 flex items-center gap-2">
-                    <div className="w-4 h-4 bg-white rounded-full animate-bounce shadow-xl shadow-white/20"></div>
-                    <span className="text-[10px] font-black text-white bg-green-600 px-3 py-1 rounded-lg uppercase">
-                      Buy
-                    </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { l: "Lot", v: "1.25 Std" },
-                    { l: "R/R", v: "1:5.4" },
-                    { l: "PNL", v: "+$2,450" },
-                  ].map((s, i) => (
-                    <div
-                      key={i}
-                      className="bg-slate-800/40 p-3 rounded-xl border border-slate-700 text-center"
-                    >
-                      <p className="text-[8px] font-bold text-slate-500 uppercase mb-1">
-                        {s.l}
-                      </p>
-                      <p className="text-[11px] font-black text-white">{s.v}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="absolute -bottom-6 -right-6 bg-yellow-500 p-5 rounded-3xl shadow-2xl z-20 animate-bounce hidden md:block border-4 border-white">
-              <TrendingUp size={28} className="text-slate-900" />
-            </div>
           </div>
         </div>
       </section>
 
-      {/* 🔹 KNOWLEDGE MATRIX (Detailed Features) */}
-      <section className="py-24 px-6 bg-[#FDFDFD] border-y border-slate-100">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-3 gap-12 mb-20 items-center">
-            <div className="lg:col-span-2 space-y-4">
-              <span className="text-yellow-600 font-black uppercase tracking-[0.4em] text-[10px] block">
-                The MMH Advantage
-              </span>
-              <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic">
-                Mastering the{" "}
-                <span className="text-yellow-500">Core Protocols.</span>
-              </h2>
-              <p className="text-slate-500 text-sm font-bold leading-relaxed max-w-2xl">
-                Trading is not about guessing; it's about identifying liquidity
-                and institutional traps. Our program takes you from market
-                structure to advanced flow analysis, identifying exactly where
-                retail money is trapped.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-6 border-l-4 border-yellow-500 bg-white shadow-sm rounded-r-xl">
-                <p className="text-3xl font-black text-slate-900">5k+</p>
-                <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest leading-none mt-1">
-                  Students
-                </p>
-              </div>
-              <div className="p-6 border-l-4 border-yellow-500 bg-white shadow-sm rounded-r-xl">
-                <p className="text-3xl font-black text-slate-900">150+</p>
-                <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest leading-none mt-1">
-                  Funded
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                icon: <LineChart />,
-                title: "Market Structure",
-                desc: "True nature of Bullish/Bearish trends, BOS (Break of Structure), and CHoCH protocols.",
-              },
-              {
-                icon: <Zap />,
-                title: "Liquidity Logic",
-                desc: "Identifying Equal Highs/Lows and Trendline Liquidity that retail traders use as Support.",
-              },
-              {
-                icon: <Lock />,
-                title: "Supply & Demand",
-                desc: "Advanced Order Block identification and FVG analysis to pinpoint entries.",
-              },
-              {
-                icon: <MousePointer2 />,
-                title: "Precision Entries",
-                desc: "Lower timeframe (Ltf) refinements that allow for high RR setups with tight stops.",
-              },
-              {
-                icon: <ShieldCheck />,
-                title: "Risk Management",
-                desc: "Professional trading plans, position sizing, and psychological fortitude for consistency.",
-              },
-              {
-                icon: <Terminal />,
-                title: "Live Execution",
-                desc: "Trade live sessions with mentors during London and NY volatility sessions.",
-              },
-              {
-                icon: <Percent />,
-                title: "Prop Firm Prep",
-                desc: "Specialized module focused on passing FTMO, MFF, and other funded challenges.",
-              },
-              {
-                icon: <UserCheck />,
-                title: "1-on-1 Audits",
-                desc: "Get your journal audited monthly to identify execution leaks in your strategy.",
-              },
-            ].map((f, i) => (
-              <div
-                key={i}
-                className="group p-8 bg-white border border-slate-100 rounded-[2rem] hover:border-yellow-500 hover:shadow-2xl transition-all duration-300"
-              >
-                <div className="w-10 h-10 bg-slate-900 text-yellow-500 rounded-xl flex items-center justify-center mb-6 group-hover:bg-yellow-500 group-hover:text-black transition-all">
-                  {React.cloneElement(f.icon, { size: 18 })}
-                </div>
-                <h3 className="text-[11px] font-black uppercase italic mb-3 tracking-widest tracking-tighter">
-                  {f.title}
-                </h3>
-                <p className="text-[10px] text-slate-500 leading-relaxed font-bold uppercase tracking-tight">
-                  {f.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 🔹 THE CURRICULUM */}
-      <section className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 space-y-2">
-            <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic">
-              Institutional <span className="text-yellow-500">Curriculum.</span>
+      {/* 🔹 NEW: THE 3-STEP PROCESS (Informatice Content) */}
+      <section className="py-16 bg-black/20">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className={`${playfair.className} text-3xl text-white uppercase italic`}>
+              The <span className="text-cyan-400">Methodology.</span>
             </h2>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.6em]">
-              Roadmap To Mastery
-            </p>
           </div>
-
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              {
-                name: "Alpha Foundation",
-                price: "$297",
-                desc: "Build a rock-solid base in technical analysis without the retail noise.",
-                features: [
-                  "Structure 101",
-                  "Candlestick Secrets",
-                  "SR Reality",
-                  "Risk Basics",
-                ],
-              },
-              {
-                name: "Smart Money Pro",
-                price: "$597",
-                popular: true,
-                desc: "Our flagship program. Learn the complete institutional framework.",
-                features: [
-                  "Order Flow",
-                  "Inducements",
-                  "OB/FVG Masterclass",
-                  "Funded Blueprint",
-                ],
-              },
-              {
-                name: "Elite Mentorship",
-                price: "$1297",
-                desc: "Hands-on, high-intensity program with direct access to Michael Harris.",
-                features: [
-                  "1-on-1 Coaching",
-                  "Custom Indicators",
-                  "Lifetime Hub",
-                  "Psychology Kit",
-                ],
-              },
-            ].map((p, i) => (
-              <div
-                key={i}
-                className={`p-10 rounded-[3rem] border transition-all duration-500 ${p.popular ? "bg-slate-900 text-white border-slate-900 shadow-2xl scale-105" : "bg-white border-slate-200"}`}
-              >
-                {p.popular && (
-                  <span className="bg-yellow-500 text-black px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest mb-6 inline-block">
-                    Recommended
-                  </span>
-                )}
-                <h3 className="text-2xl font-black uppercase italic tracking-tighter">
-                  {p.name}
-                </h3>
-                <p
-                  className={`text-[10px] my-6 font-bold uppercase ${p.popular ? "text-slate-400" : "text-slate-500"}`}
-                >
-                  {p.desc}
-                </p>
-                <div className="mb-8 border-t border-slate-100/10 pt-6 flex items-baseline gap-2">
-                  <span
-                    className={`text-5xl font-black ${p.popular ? "text-yellow-500" : "text-slate-900"}`}
-                  >
-                    {p.price}
-                  </span>
-                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">
-                    Lifetime
-                  </span>
-                </div>
-                <ul className="space-y-4 mb-10">
-                  {p.features.map((item) => (
-                    <li
-                      key={item}
-                      className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest"
-                    >
-                      <CheckCircle2 size={14} className="text-yellow-500" />{" "}
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  className={`w-full py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] transition-all shadow-lg ${p.popular ? "bg-yellow-500 text-black hover:bg-white" : "bg-slate-900 text-white hover:bg-yellow-500 hover:text-black"}`}
-                >
-                  Enroll Now
-                </button>
+              { step: "01", title: "Identify POI", desc: "Locate Point of Interest using HTF Orderflow and Liquidity voids.", icon: <Search /> },
+              { step: "02", title: "Refine Entry", desc: "Wait for LTF Displacement and Market Structure Shift (mSS).", icon: <MousePointer2 /> },
+              { step: "03", title: "Scale Position", desc: "Secure partials at external liquidity and ride the institutional trend.", icon: <TrendingUp /> },
+            ].map((item, i) => (
+              <div key={i} className="relative p-8 bg-[#0D1117] border border-white/5 rounded-2xl group">
+                <div className="text-5xl font-black text-white/5 absolute top-4 right-4">{item.step}</div>
+                <div className="text-cyan-400 mb-4">{React.cloneElement(item.icon, { size: 24 })}</div>
+                <h3 className="text-white font-bold uppercase tracking-widest text-sm mb-2">{item.title}</h3>
+                <p className="text-[11px] text-slate-500 leading-relaxed uppercase">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 🔹 NEWSLETTER */}
-      <section className="py-24 px-6 bg-slate-50 border-t border-slate-100">
-        <div className="max-w-5xl mx-auto bg-white border border-slate-200 p-12 md:p-24 rounded-[4rem] shadow-sm text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-5 text-slate-900">
-            <Star size={150} />
-          </div>
-          <h2 className="text-4xl font-black italic uppercase tracking-tighter mb-4">
-            Join the <span className="text-yellow-500">Waitlist.</span>
+      {/* 🔹 ASSET SPECIALIZATION */}
+      <section className="py-16 px-4 border-y border-white/5">
+        <div className="max-w-7xl mx-auto">
+          <h2 className={`${playfair.className} text-3xl text-white uppercase italic mb-10`}>
+            Asset <span className="text-cyan-400">Specialization.</span>
           </h2>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest max-w-sm mx-auto mb-12 leading-relaxed">
-            Limited cohorts only. Get notified when the next trading cycle
-            opens.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="YOUR@ALGO.EMAIL"
-              className="flex-1 bg-slate-50 border border-slate-200 px-8 py-5 rounded-2xl focus:outline-none focus:border-yellow-500 transition-all font-mono text-[10px] text-yellow-600 font-black uppercase"
-            />
-            <button className="bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-yellow-500 hover:text-black transition-all shadow-xl">
-              Submit
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { pair: "XAUUSD (GOLD)", icon: <Flame />, focus: "London Liquidity Sweeps", desc: "Master the 8:00 AM NY Open volatility. We target gold's high-probability manipulation legs and hunt the 5m Order Blocks." },
+              { pair: "NAS100 (TECH)", icon: <TrendingUp />, focus: "Opening Range Breakouts", desc: "Algorithmically hunting the liquidity above/below the previous day's high/low on tech indices with precision timing." },
+              { pair: "BTCUSD (CRYPTO)", icon: <Coins />, focus: "Weekend Liquidity Loops", desc: "Understand how BTC rebalances FVG gaps during low-volume sessions. Trade the institutional footprint in a 24/7 market." },
+            ].map((item, i) => (
+              <div key={i} className="p-8 bg-[#0D1117] border border-white/5 rounded-2xl hover:border-cyan-500/50 transition-all group">
+                <div className="text-cyan-400 mb-6 group-hover:scale-110 transition-transform">{React.cloneElement(item.icon, { size: 32 })}</div>
+                <h3 className="text-lg font-bold text-white uppercase mb-2 tracking-tighter">{item.pair}</h3>
+                <p className="text-[10px] text-cyan-500 font-bold uppercase mb-4 tracking-[0.2em]">{item.focus}</p>
+                <p className="text-xs text-slate-500 leading-relaxed font-sans">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 🔹 NEW: LIVE MARKET STREAM (Informative) */}
+      <section className="py-16 bg-gradient-to-r from-cyan-500/5 to-transparent">
+        <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <div className="flex items-center gap-2 text-red-500 mb-4">
+              <Radio size={16} className="animate-pulse" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Live Mentorship Sessions</span>
+            </div>
+            <h2 className={`${playfair.className} text-4xl text-white uppercase mb-6`}>
+              We don't just teach. <br /> We <span className="text-cyan-400">Execute Live.</span>
+            </h2>
+            <p className="text-xs text-slate-500 uppercase leading-loose tracking-widest mb-8">
+              Every New York Open, join our lead analysts as they break down the market footprint in real-time.
+              See exactly how we identify institutional traps before they happen.
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="border border-white/10 p-4 rounded-lg bg-black/40">
+                <p className="text-white font-bold text-xl">Daily</p>
+                <p className="text-[9px] text-cyan-400 uppercase tracking-tighter">Live NY Stream</p>
+              </div>
+              <div className="border border-white/10 p-4 rounded-lg bg-black/40">
+                <p className="text-white font-bold text-xl">24/7</p>
+                <p className="text-[9px] text-cyan-400 uppercase tracking-tighter">Discord Support</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[#0D1117] border border-white/10 rounded-2xl aspect-video relative overflow-hidden flex items-center justify-center">
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1611974717482-58a2524e9ec5?q=80&w=2070')] bg-cover opacity-20 grayscale"></div>
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-cyan-500 flex items-center justify-center animate-bounce cursor-pointer">
+                <ChevronRight className="text-black ml-1" />
+              </div>
+              <p className="text-[10px] font-bold text-white uppercase mt-4 tracking-widest">Watch Sample Audit</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 🔹 COURSE CAROUSEL */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="mb-10 text-center">
+            <h2 className={`${playfair.className} text-3xl text-white uppercase italic`}>
+              Elite <span className="text-cyan-400">Curriculum.</span>
+            </h2>
+            <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-2">Scale from Zero to $100k Funded.</p>
+          </div>
+
+          <div ref={scrollRef} className="flex gap-6 overflow-x-auto scroll-smooth pb-8 no-scrollbar [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {[
+              { t: "SMC Fundamentals", l: "Entry", p: "$199", d: "The core logic of market structure, FVG, and retail liquidity pools." },
+              { t: "Advanced Liquidity", l: "Master", p: "$499", d: "Bank manipulations and HTF/LTF alignment for high R:R entries." },
+              { t: "The Funding Blueprint", l: "Pro", p: "$299", d: "Passing FTMO/MFF challenges with rigid risk management protocols." },
+              { t: "Crypto Algo Trading", l: "Expert", p: "$399", d: "Deploying institutional logic into the 24/7 Bitcoin and ETH markets." },
+              { t: "Psychology & Tape", l: "Mindset", p: "$149", d: "Master the mental game of holding runners for 1:10+ RR trades." },
+            ].map((course, i) => (
+              <div key={i} className="min-w-[280px] md:min-w-[350px] bg-[#0D1117] border border-white/5 rounded-3xl p-8 group hover:bg-cyan-900/10 transition-all cursor-pointer">
+                <span className="text-[10px] px-3 py-1 border border-cyan-500/30 text-cyan-400 rounded-full uppercase font-bold">{course.l}</span>
+                <h3 className="text-xl font-bold text-white uppercase mt-6 mb-3 tracking-tighter">{course.t}</h3>
+                <p className="text-xs text-slate-500 mb-8 leading-relaxed">{course.d}</p>
+                <div className="flex items-center justify-between border-t border-white/5 pt-6">
+                  <span className="text-white font-bold">{course.p}</span>
+                  <button className="flex items-center gap-2 text-cyan-400 text-[10px] font-bold uppercase group-hover:gap-4 transition-all">
+                    View Details <ArrowRight size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center gap-3">
+            <button onClick={() => slide("left")} className="group relative p-4 bg-[#0D1117] border border-white/10 rounded-xl transition-all hover:border-cyan-500/50 hover:bg-cyan-500/5 active:scale-95 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+              <ChevronRight className="rotate-180 text-slate-400 group-hover:text-cyan-400 transition-colors relative z-10" size={20} />
+            </button>
+            <button onClick={() => slide("right")} className="group relative p-4 bg-[#0D1117] border border-white/10 rounded-xl transition-all hover:border-cyan-500/50 hover:bg-cyan-500/5 active:scale-95 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+              <ChevronRight className="text-slate-400 group-hover:text-cyan-400 transition-colors relative z-10" size={20} />
             </button>
           </div>
+        </div>
+      </section>
+
+      {/* 🔹 INFRASTRUCTURE GRID */}
+      <section className="py-16 bg-black">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="mb-12 text-center">
+            <h2 className={`${playfair.className} text-3xl text-white uppercase italic tracking-tighter`}>
+              The <span className="text-cyan-400">Infrastructure.</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 border border-white/5 rounded-xl overflow-hidden">
+            {[
+              { icon: <Cpu size={20} />, title: "Execution Hub", desc: "Proprietary bridge for 5ms latency." },
+              { icon: <Layers size={20} />, title: "SMC Overlays", desc: "Automated FVG & Liquidity mapping." },
+              { icon: <Target size={20} />, title: "Risk Protocol", desc: "Hard-coded drawdown protection." },
+              { icon: <Globe size={20} />, title: "News Filter", desc: "Live High-Impact event shielding." },
+              { icon: <History size={20} />, title: "Tape Reading", desc: "Historical price action deconstruction." },
+              { icon: <ShieldCheck size={20} />, title: "Audit Ready", desc: "Built for $100k+ Prop Firm Rules." },
+              { icon: <BarChart3 size={20} />, title: "Volume Delta", desc: "Real-time buying vs selling power." },
+              { icon: <Terminal size={20} />, title: "API Bridge", desc: "Seamless MT4/MT5 synchronization." },
+            ].map((f, i) => (
+              <div key={i} className="bg-[#010409] p-10 hover:bg-cyan-500/5 transition-all group flex flex-col items-center text-center">
+                <div className="text-cyan-400 mb-5 group-hover:scale-110 transition-transform duration-300">{f.icon}</div>
+                <h3 className="text-[11px] font-bold text-white uppercase mb-3 tracking-[0.2em]">{f.title}</h3>
+                <p className="text-[10px] text-slate-500 uppercase leading-relaxed max-w-[180px]">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="py-16 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="relative p-8 md:p-12 bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:border-cyan-500/30 transition-all">
+            {/* Decorative Background Glow */}
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 blur-[80px] rounded-full"></div>
+
+            <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+              {/* Side Accent Line */}
+              <div className="hidden md:block w-1 h-32 bg-gradient-to-b from-cyan-500 to-transparent rounded-full mt-2"></div>
+
+              <div className="space-y-4">
+                <h2 className={`${playfair.className} text-2xl md:text-3xl text-white uppercase italic tracking-tight`}>
+                  The Institutional <span className="text-cyan-400">Edge.</span>
+                </h2>
+
+                <p className="text-sm md:text-base text-slate-400 leading-relaxed font-light">
+                  Trading is not about predicting the future; it's about following the money.
+                  Retail traders often get trapped in "smart money" manipulations because they
+                  rely on lagging indicators and static patterns. Our approach strips away the
+                  noise, focusing purely on <span className="text-white font-medium italic">Liquidity Pools, Order Blocks, and Time & Price alignment.</span> {" "}
+                  By understanding the footprint of central banks, you stop being the exit liquidity
+                  and start trading alongside the dominant market force.
+                </p>
+
+                <div className="inline-flex items-center gap-2 text-[10px] font-bold text-cyan-500 uppercase tracking-[0.2em] pt-2 border-b border-cyan-500/30 pb-1">
+                  Precision Execution Protocol
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* 🔹 NEW: RISK PROTECTION (Informative Content) */}
+      <section className="py-16 border-y border-white/5 bg-[#0D1117]/10">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h2 className={`${playfair.className} text-3xl text-white uppercase italic mb-12`}>
+            Institutional <span className="text-red-500">Guardrails.</span>
+          </h2>
+          <div className="grid md:grid-cols-4 gap-4">
+            {[
+              { label: "Max Daily DD", val: "3%", icon: <Lock /> },
+              { label: "Max Total DD", val: "8%", icon: <ShieldCheck /> },
+              { label: "Profit Target", val: "10%", icon: <Target /> },
+              { label: "Leverage", val: "1:100", icon: <Zap /> },
+            ].map((item, i) => (
+              <div key={i} className="p-6 border border-white/5 rounded-xl bg-black/40">
+                <div className="text-slate-600 mb-3 flex justify-center">{React.cloneElement(item.icon, { size: 18 })}</div>
+                <p className="text-[10px] uppercase text-slate-500 tracking-[0.2em] mb-1">{item.label}</p>
+                <p className="text-xl font-bold text-white">{item.val}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 🔹 WHY STUDENTS FAIL */}
+      <section className="py-16 bg-[#0D1117]/30">
+        <div className="max-w-5xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+          <div className="space-y-6">
+            <h2 className={`${playfair.className} text-4xl text-white uppercase`}>
+              Why 95% <br /> Of Traders <span className="text-red-500">Fail.</span>
+            </h2>
+            <div className="space-y-4 text-xs uppercase leading-relaxed">
+              <div className="flex gap-4 p-4 bg-white/5 rounded border border-white/5">
+                <Zap size={16} className="text-red-500 shrink-0" />
+                <p>Retail patterns like Trendlines are used as bait for institutional exit liquidity.</p>
+              </div>
+              <div className="flex gap-4 p-4 bg-white/5 rounded border border-white/5">
+                <ShieldCheck size={16} className="text-red-500 shrink-0" />
+                <p>Lack of HTF (High Time Frame) bias results in trading against the bank trend.</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-8 border-l-4 border-cyan-500 bg-cyan-500/5">
+            <p className={`${playfair.className} text-xl text-white italic mb-4`}>
+              "The market is a device for transferring money from the impatient to the patient."
+            </p>
+            <p className="text-[10px] font-bold text-cyan-400 uppercase tracking-[0.3em]">— MMH TRADING ACADEMY</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 🔹 FAQ */}
+      <section className="py-16 px-4 max-w-4xl mx-auto">
+        <h2 className="text-center text-xs font-bold text-slate-500 uppercase tracking-[0.5em] mb-12">Frequently Asked Questions</h2>
+        <div className="space-y-4">
+          {[
+            { q: "Do I need a large account?", a: "No. We specialize in teaching students how to pass 5 and 6-figure funding challenges using low-risk SMC entries." },
+            { q: "Is there a community?", a: "Yes. Joining gives you instant access to our Discord where we discuss XAUUSD, NAS100, and BTCUSD setups live." },
+            { q: "What is the mentorship duration?", a: "Our core curriculum is lifetime access, including weekly live audit sessions until you reach consistency." },
+          ].map((faq, i) => (
+            <details key={i} className="group border border-white/5 bg-white/5 rounded-lg p-4 cursor-pointer hover:bg-white/10 transition-all">
+              <summary className="flex justify-between items-center text-[10px] font-bold uppercase text-white list-none">
+                {faq.q} <ChevronRight size={14} className="group-open:rotate-90 transition-transform" />
+              </summary>
+              <p className="mt-4 text-[10px] text-slate-500 leading-relaxed uppercase">{faq.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* 🔹 FINAL CTA */}
+      <section className="py-20 px-4 bg-gradient-to-b from-transparent to-cyan-900/10">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className={`${playfair.className} text-5xl md:text-7xl text-white uppercase italic mb-8`}>
+            Stop Guessing. <br /> Start Winning.
+          </h2>
+          <button className="bg-cyan-500 text-black px-12 py-5 rounded-full font-bold text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_40px_rgba(34,211,238,0.3)]">
+            Join The 5% Now
+          </button>
+          <p className="mt-8 text-[9px] text-slate-600 uppercase tracking-widest">Next Batch Starts In: 02d : 14h : 45m</p>
         </div>
       </section>
     </main>
