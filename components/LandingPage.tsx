@@ -360,7 +360,7 @@ export default function ProfessionalForexLanding() {
             Stop Guessing. <br /> Start Winning.
           </h2>
           <button className="bg-cyan-500 text-black px-12 py-5 rounded-full font-bold text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_40px_rgba(34,211,238,0.3)]">
-            Join The 5% Now
+            Join The 5% No
           </button>
           <p className="mt-8 text-[9px] text-slate-600 uppercase tracking-widest">Next Batch Starts In: 02d : 14h : 45m</p>
         </div>
