@@ -1,121 +1,197 @@
 "use client";
-import React, { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { Plus, Trash2, UploadCloud } from "lucide-react";
+import { CldUploadWidget } from "next-cloudinary";
 
-function SignalsContent({ params }) {
-    const searchParams = useSearchParams();
-    const [signals, setSignals] = useState([]);
-    const [loading, setLoading] = useState(true);
+export default function SignalForm({ initialData, onSuccess }) {
+    const strategyOptions = {
+        FOREX: ["SCALPING", "LONG_TERM", "RESULTS"],
+        STOCKS: ["INTRADAY", "SWING", "ANALYSIS"],
+        CRYPTO: ["SPOT", "FUTURE"],
+    };
 
-    // URL se Category aur Strategy nikalna
-    const category = params.category; // e.g. forex
-    const activeStrategy = searchParams.get("strategy") || "ALL";
+    const [formData, setFormData] = useState({
+        pair: "",
+        heading: "",
+        slug: "",
+        description: "",
+        image: "",
+        category: "FOREX",
+        strategy: "SCALPING", // Default match with strategyOptions
+        type: "BUY",
+        entryPrice: "",
+        stopLoss: "",
+        takeProfits: [""],
+        status: "ACTIVE",
+    });
 
     useEffect(() => {
-        const fetchSignals = async () => {
-            setLoading(true);
-            try {
-                // API se data mangwana
-                const res = await fetch(`/api/signals?category=${category.toUpperCase()}`);
-                const data = await res.json();
+        if (initialData) {
+            setFormData({
+                ...initialData,
+                takeProfits: initialData.takeProfits?.length ? initialData.takeProfits : [""]
+            });
+        }
+    }, [initialData]);
 
-                // 🔥 FILTER LOGIC: Jo Navbar se Strategy aayi hai sirf wahi dikhao
-                if (activeStrategy !== "ALL") {
-                    const filtered = data.filter(sig => 
-                        sig.strategy.toUpperCase() === activeStrategy.toUpperCase()
-                    );
-                    setSignals(filtered);
-                } else {
-                    setSignals(data);
-                }
-            } catch (error) {
-                console.error("Fetch error:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const handleCategoryChange = (e) => {
+        const newCat = e.target.value;
+        setFormData({
+            ...formData,
+            category: newCat,
+            strategy: strategyOptions[newCat][0]
+        });
+    };
 
-        fetchSignals();
-        
-        // 🚀 YE LINE SAB SE ZAROORI HAI: 
-        // Jab bhi activeStrategy (URL) badlay ga, ye function dobara chalay ga.
-    }, [category, activeStrategy]); 
+    const handleHeadingChange = (e) => {
+        const val = e.target.value;
+        const generatedSlug = val.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+        setFormData({ ...formData, heading: val, slug: generatedSlug });
+    };
+
+    const handleTPChange = (index, value) => {
+        const newTPs = [...formData.takeProfits];
+        newTPs[index] = value;
+        setFormData({ ...formData, takeProfits: newTPs });
+    };
+
+    const addTP = () => setFormData({ ...formData, takeProfits: [...formData.takeProfits, ""] });
+    const removeTP = (index) => {
+        const newTPs = formData.takeProfits.filter((_, i) => i !== index);
+        setFormData({ ...formData, takeProfits: newTPs });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const method = initialData ? "PUT" : "POST";
+        const url = initialData ? `/api/signals/${initialData._id}` : "/api/signals";
+
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+            if (res.ok) onSuccess();
+        } catch (err) {
+            console.error("Submit Error:", err);
+        }
+    };
 
     return (
-        <div className="min-h-screen bg-[#06090F] text-white p-8">
-            <div className="mb-10">
-                <h1 className="text-6xl font-black italic uppercase tracking-tighter">
-                    {category} <span className="text-cyan-500">{activeStrategy}</span>
-                </h1>
+        <form onSubmit={handleSubmit} className="p-8 space-y-6 bg-[#0D1117] text-white max-h-[90vh] overflow-y-auto no-scrollbar border-t border-white/5">
+            <div className="border-b border-white/5 pb-4">
+                <h2 className="text-2xl font-black uppercase text-cyan-500 italic tracking-tighter">Signal <span className="text-white">Terminal</span></h2>
             </div>
 
-            {/* Strategy Filter Tabs (Jo aapki screen par buttons hain) */}
-            <div className="flex gap-4 mb-10 overflow-x-auto pb-4 no-scrollbar">
-                {["ALL", "INTRADAY", "SWING", "SCALPING", "LONG_TERM", "SPOT", "FUTURE"].map((strat) => (
-                    <button
-                        key={strat}
-                        onClick={() => window.history.pushState(null, "", `?strategy=${strat}`)}
-                        className={`px-8 py-3 rounded-full text-[10px] font-black tracking-widest transition-all border ${
-                            activeStrategy === strat 
-                            ? "bg-cyan-500 border-cyan-500 text-black shadow-lg shadow-cyan-500/20" 
-                            : "bg-white/5 border-white/5 text-slate-500 hover:border-white/20"
-                        }`}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* CHART UPLOADER - FIXED LOGIC */}
+                <div className="col-span-full">
+                    <CldUploadWidget
+                        uploadPreset="mmhtrading"
+                        onSuccess={(result) => {
+                            // FIXED: Functional update use kiya taake baaki inputs safe rahein
+                            setFormData(prev => ({ ...prev, image: result.info.secure_url }));
+                        }}
                     >
-                        {strat.replace("_", " ")}
-                    </button>
-                ))}
+                        {({ open }) => (
+                            <div onClick={() => open()} className="group relative border-2 border-dashed border-white/10 rounded-3xl p-6 transition-all hover:border-cyan-500/50 hover:bg-cyan-500/5 cursor-pointer flex flex-col items-center justify-center min-h-[200px]">
+                                {formData.image ? <img src={formData.image} className="w-full h-48 object-cover rounded-2xl" alt="Preview" /> : <p className="text-[10px] font-black text-slate-500 uppercase">Upload Chart</p>}
+                            </div>
+                        )}
+                    </CldUploadWidget>
+                </div>
+
+                {/* HEADING */}
+                <div className="col-span-full space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">Heading</label>
+                    <input className="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none focus:border-cyan-500 font-bold" value={formData.heading} onChange={handleHeadingChange} />
+                </div>
+
+                {/* PAIR */}
+                <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">Pair</label>
+                    <input className="w-full bg-black/40 border border-white/10 p-4 rounded-xl focus:border-cyan-500 outline-none font-black text-cyan-500 uppercase" value={formData.pair} onChange={(e) => setFormData({ ...formData, pair: e.target.value.toUpperCase() })} />
+                </div>
+
+                {/* CATEGORY */}
+                <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">Category</label>
+                    <select className="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none font-bold" value={formData.category} onChange={handleCategoryChange}>
+                        <option value="FOREX">FOREX</option>
+                        <option value="CRYPTO">CRYPTO</option>
+                        <option value="STOCKS">STOCKS</option>
+                    </select>
+                </div>
+
+                {/* DYNAMIC STRATEGY */}
+                <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">Strategy ({formData.category})</label>
+                    <select className="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none font-bold uppercase text-cyan-500" value={formData.strategy} onChange={(e) => setFormData({ ...formData, strategy: e.target.value })}>
+                        {strategyOptions[formData.category].map((opt) => (
+                            <option key={opt} value={opt}>{opt.replace("_", " ")}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* TRADE TYPE */}
+                <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">Trade Type</label>
+                    <select className="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none font-bold uppercase" value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })}>
+                        <option value="BUY">BUY</option>
+                        <option value="SELL">SELL</option>
+                    </select>
+                </div>
+
+                {/* DESCRIPTION */}
+                <div className="col-span-full space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">Market Analysis (Description)</label>
+                    <textarea
+                        className="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none min-h-[120px] text-sm text-slate-300"
+                        value={formData.description}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        placeholder="Explain the setup..."
+                    />
+                </div>
+
+                {/* ENTRY & SL */}
+                <div className="space-y-2 font-mono">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">Entry Price</label>
+                    <input className="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none font-bold text-cyan-500" value={formData.entryPrice} onChange={(e) => setFormData({ ...formData, entryPrice: e.target.value })} />
+                </div>
+                <div className="space-y-2 font-mono">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">Stop Loss</label>
+                    <input className="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none font-bold text-red-500" value={formData.stopLoss} onChange={(e) => setFormData({ ...formData, stopLoss: e.target.value })} />
+                </div>
+
+                {/* TP TARGETS */}
+                <div className="col-span-full space-y-3">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">Take Profit Targets</label>
+                    {formData.takeProfits.map((tp, index) => (
+                        <div key={index} className="flex gap-2 font-mono">
+                            <input className="flex-1 bg-black/40 border border-white/10 p-3 rounded-xl outline-none text-green-500 font-bold" value={tp} onChange={(e) => handleTPChange(index, e.target.value)} placeholder={`TP ${index + 1}`} />
+                            {formData.takeProfits.length > 1 && <button type="button" onClick={() => removeTP(index)} className="p-3 text-red-500"><Trash2 size={18} /></button>}
+                        </div>
+                    ))}
+                    <button type="button" onClick={addTP} className="text-[9px] font-black text-cyan-500 bg-cyan-500/5 px-4 py-2 rounded-lg border border-cyan-500/10 uppercase">+ Add TP</button>
+                </div>
+
+                {/* SIGNAL STATUS */}
+                <div className="col-span-full space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">Signal Status</label>
+                    <select className="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none font-bold uppercase text-cyan-500" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="HIT_TP">HIT TP</option>
+                        <option value="HIT_SL">HIT SL</option>
+                        <option value="CLOSED">CLOSED</option>
+                        <option value="PENDING">PENDING</option>
+                    </select>
+                </div>
             </div>
 
-            {/* Signals Grid Display */}
-            {loading ? (
-                <div className="flex items-center gap-3 text-cyan-500 font-bold animate-pulse">
-                    <div className="w-2 h-2 bg-cyan-500 rounded-full"></div> LOADING TERMINAL...
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {signals.length > 0 ? (
-                        signals.map((sig) => (
-                            <div key={sig._id} className="bg-[#0D1117] border border-white/5 rounded-[2rem] overflow-hidden hover:border-cyan-500/40 transition-all group">
-                                <div className="relative h-56">
-                                    <img src={sig.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Chart" />
-                                    <div className={`absolute top-4 right-4 px-4 py-1.5 rounded-xl text-[10px] font-black ${sig.type === 'BUY' ? 'bg-green-500 text-black' : 'bg-red-500 text-white'}`}>
-                                        {sig.type}
-                                    </div>
-                                </div>
-                                <div className="p-6">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <h3 className="text-2xl font-black">{sig.pair}</h3>
-                                        <span className="text-[9px] bg-white/5 px-2 py-1 rounded text-slate-400 font-mono">{sig.strategy}</span>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-3 mt-6">
-                                        <div className="bg-black/40 p-4 rounded-2xl border border-white/5 text-center">
-                                            <p className="text-[8px] text-slate-500 uppercase font-bold mb-1">Entry</p>
-                                            <p className="font-mono font-bold text-cyan-500">{sig.entryPrice}</p>
-                                        </div>
-                                        <div className="bg-red-500/5 p-4 rounded-2xl border border-red-500/10 text-center">
-                                            <p className="text-[8px] text-red-500/50 uppercase font-bold mb-1">Stop Loss</p>
-                                            <p className="font-mono font-bold text-red-500">{sig.stopLoss}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <div className="col-span-full py-32 text-center border-2 border-dashed border-white/5 rounded-[3rem]">
-                            <p className="text-slate-600 font-bold uppercase tracking-[0.2em]">No Active {activeStrategy} Signals Found</p>
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
-    );
-}
-
-// Next.js SearchParams requirement
-export default function FinalSignalsPage({ params }) {
-    return (
-        <Suspense fallback={<div className="p-10 text-white">Loading...</div>}>
-            <SignalsContent params={params} />
-        </Suspense>
+            <button type="submit" className="w-full bg-cyan-500 text-black font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-xs hover:bg-white transition-all">
+                {initialData ? "Update Signal" : "Broadcast Signal"}
+            </button>
+        </form>
     );
 }

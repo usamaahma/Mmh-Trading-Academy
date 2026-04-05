@@ -17,9 +17,16 @@ import {
   FaInstagram,
   FaFacebookF,
 } from "react-icons/fa";
+import Link from "next/link";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const footerLinks = [
+    { name: "Risk Disclosure", slug: "/risk-disclosure" },
+    { name: "Privacy Policy", slug: "/privacy-policy" },
+    { name: "Terms of Service", slug: "/terms" },
+    { name: "Contact Us", slug: "/contact-us" },
+  ];
 
   return (
     <footer className="bg-[#010409] text-slate-400 border-t border-cyan-500/10 pt-16 pb-8 font-sans">
@@ -71,9 +78,14 @@ export default function Footer() {
                 Legal
               </h4>
               <ul className="space-y-3 text-[11px] font-bold uppercase tracking-wider">
-                {["Risk Disclosure", "Privacy Policy", "Terms of Service"].map((item) => (
-                  <li key={item} className="hover:text-cyan-400 cursor-pointer transition-all">
-                    {item}
+                {footerLinks.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.slug}
+                      className="hover:text-cyan-400 cursor-pointer transition-all duration-300 block"
+                    >
+                      {item.name}
+                    </Link>
                   </li>
                 ))}
               </ul>

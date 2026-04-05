@@ -1,4 +1,4 @@
-import "../globals.css"; // CSS lazmi import karo taake Tailwind chale
+import "../globals.css"; 
 
 export const metadata = {
   title: "MMH Admin Terminal",
@@ -7,12 +7,10 @@ export const metadata = {
 
 export default function AdminLayout({ children }) {
   return (
-    <html lang="en">
-      <body className="bg-[#010409] text-white">
-        <div className="min-h-screen overflow-x-hidden">
-          {children}
-        </div>
-      </body>
-    </html>
+    // HTML aur BODY tags yahan se khatam kar diye hain
+    // Sirf wrapper div rakhein jo admin area ko style kare
+    <div className="min-h-screen bg-[#010409] text-white overflow-x-hidden">
+        {children}
+    </div>
   );
 }

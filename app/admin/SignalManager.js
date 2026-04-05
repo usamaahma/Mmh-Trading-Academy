@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, X, Zap } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Zap, Loader2 } from "lucide-react";
 import SignalForm from "./SignalForm";
 
 export default function SignalManager() {
@@ -8,13 +8,21 @@ export default function SignalManager() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingSignal, setEditingSignal] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [time, setTime] = useState("");
+
+    // Hydration Fix: Time ko client-side par set karna
+    useEffect(() => {
+        setTime(new Date().toLocaleTimeString());
+        const timer = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     const fetchSignals = async () => {
         try {
             setLoading(true);
             const res = await fetch("/api/signals");
             const data = await res.json();
-            setSignals(data);
+            setSignals(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error("Fetch error:", err);
         } finally {
@@ -24,7 +32,6 @@ export default function SignalManager() {
 
     useEffect(() => {
         fetchSignals();
-        // Esc key se modal close karne ka logic
         const handleEsc = (e) => {
             if (e.key === "Escape") setIsModalOpen(false);
         };
@@ -59,7 +66,7 @@ export default function SignalManager() {
                     </div>
                     <div>
                         <h2 className="text-xl font-black text-white italic uppercase tracking-tighter">Signal <span className="text-cyan-500">Terminal</span></h2>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Total Entries: {signals.length}</p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Total Entries: {signals.length} | {time}</p>
                     </div>
                 </div>
                 <button
@@ -84,11 +91,11 @@ export default function SignalManager() {
                     </thead>
                     <tbody className="text-sm">
                         {loading ? (
-                            <tr><td colSpan={5} className="p-20 text-center text-slate-500 animate-pulse uppercase font-bold tracking-widest">Accessing Database...</td></tr>
+                            <tr><td colSpan={5} className="p-20 text-center text-slate-500"><Loader2 className="animate-spin mx-auto mb-2 text-cyan-500" /> ACCESSING DATABASE...</td></tr>
                         ) : signals.map((s) => (
                             <tr key={s._id} className="hover:bg-white/[0.02] transition-colors group border-b border-white/[0.02]">
                                 <td className="p-5">
-                                    <div className="font-black text-white text-base tracking-tighter">{s.pair}</div>
+                                    <div className="font-black text-white text-base tracking-tighter uppercase">{s.pair}</div>
                                     <div className="text-[9px] text-slate-500 font-bold uppercase">{s.category}</div>
                                 </td>
                                 <td className="p-5">
@@ -98,12 +105,11 @@ export default function SignalManager() {
                                 </td>
                                 <td className="p-5">
                                     <span className="text-slate-400 font-bold text-[11px] bg-white/5 px-2 py-1 rounded">
-                                        {s.strategy.replace("_", " ")}
+                                        {s.strategy?.replace("_", " ")}
                                     </span>
                                 </td>
                                 <td className="p-5">
-                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black tracking-tighter shadow-sm ${s.status === 'ACTIVE' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/20' : 'bg-slate-800 text-slate-400'
-                                        }`}>
+                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black tracking-tighter shadow-sm ${s.status === 'ACTIVE' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/20' : 'bg-slate-800 text-slate-400'}`}>
                                         {s.status}
                                     </span>
                                 </td>
@@ -122,20 +128,14 @@ export default function SignalManager() {
             {/* MODAL POPUP */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-200">
-                    {/* Click outside to close (Optional: if you click on the black background, it closes) */}
                     <div className="absolute inset-0" onClick={() => setIsModalOpen(false)}></div>
-
-                    <div className="relative w-full max-w-3xl max-h-[95vh] overflow-hidden bg-[#0D1117] rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] z-20">
-
-                        {/* 🔥 NEW CLOSE BUTTON: MODAL KE ANDAR TOP RIGHT PE */}
+                    <div className="relative w-full max-w-3xl max-h-[95vh] overflow-y-auto no-scrollbar bg-[#0D1117] rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] z-20">
                         <button
                             onClick={() => setIsModalOpen(false)}
                             className="absolute top-6 right-6 z-[100] p-2 bg-white/5 hover:bg-red-500 hover:text-white text-slate-400 rounded-full transition-all group"
                         >
                             <X size={20} className="group-hover:rotate-90 transition-transform duration-200" />
                         </button>
-
-                        {/* FORM */}
                         <SignalForm
                             initialData={editingSignal}
                             onSuccess={() => {

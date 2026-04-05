@@ -1,11 +1,27 @@
 "use client";
-import React, { useState } from "react";
-// 1. SignalManager import karein (Form ko is ke andar handle kiya hai humne)
+import React, { useState, useEffect } from "react"; // 1. useEffect add kiya
 import SignalManager from "./SignalManager";
 import AdminSidebar from "./AdminSidebar";
+import AnalysisForm from "./analysis";
+import ManageCourses from "../../components-admin/managecourses";
+import AdminBrokersPage from "./brokers";
 
 export default function AdminPage() {
     const [activeTab, setActiveTab] = useState("signals");
+    const [currentTime, setCurrentTime] = useState(""); // 2. State for time
+
+    // 3. Client-side par time set karne ka logic
+    useEffect(() => {
+        // Initial time set karein
+        setCurrentTime(new Date().toLocaleTimeString());
+
+        // Har second update karein
+        const timer = setInterval(() => {
+            setCurrentTime(new Date().toLocaleTimeString());
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
 
     return (
         <div className="flex min-h-screen bg-[#010409]">
@@ -25,31 +41,25 @@ export default function AdminPage() {
                         </div>
                     </div>
 
-                    <div className="bg-[#0D1117] px-6 py-3 rounded-2xl border border-white/5 text-[10px] font-black text-cyan-500 shadow-xl tracking-widest flex items-center gap-3">
+                    {/* 4. Time Display Logic */}
+                    <div className="bg-[#0D1117] px-6 py-3 rounded-2xl border border-white/5 text-[10px] font-black text-cyan-500 shadow-xl tracking-widest flex items-center gap-3 min-w-[150px]">
                         <span className="opacity-50">STK_PRT:</span>
-                        {new Date().toLocaleTimeString()}
+                        {/* Agar time abhi set nahi hua (server side) to placeholder dikhayein */}
+                        {currentTime || "--:--:--"}
                     </div>
                 </header>
 
-                {/* 🔹 Tab Switching Logic */}
+                {/* Tab Switching Logic */}
                 <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
-
-                    {/* 🔥 Yahan humne SignalManager laga diya hai */}
                     {activeTab === "signals" && <SignalManager />}
 
-                    {activeTab === "analysis" && (
-                        <div className="text-center p-20 border border-dashed border-white/10 rounded-3xl bg-[#0D1117]/50">
-                            <div className="text-cyan-500/20 mb-4 flex justify-center italic font-black text-6xl">02</div>
-                            <h3 className="text-slate-500 uppercase font-black tracking-widest">Analysis Module Coming Soon</h3>
-                        </div>
-                    )}
+                    {activeTab === "analysis" && <AnalysisForm />
+                    }
 
-                    {activeTab === "courses" && (
-                        <div className="text-center p-20 border border-dashed border-white/10 rounded-3xl bg-[#0D1117]/50">
-                            <div className="text-cyan-500/20 mb-4 flex justify-center italic font-black text-6xl">03</div>
-                            <h3 className="text-slate-500 uppercase font-black tracking-widest">Courses Module Coming Soon</h3>
-                        </div>
-                    )}
+                    {activeTab === "courses" && <ManageCourses/>}
+                    {activeTab === "brokers" && <AdminBrokersPage/>}
+
+                    
                 </div>
             </main>
         </div>
