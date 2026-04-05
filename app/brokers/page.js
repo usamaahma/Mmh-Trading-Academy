@@ -74,7 +74,6 @@ export default function FourColumnBrokers() {
                                     </h2>
                                 </div>
 
-                                {/* VERTICAL CARDS LIST */}
                                 <div className="space-y-3 md:space-y-4">
                                     {filtered.length > 0 ? (
                                         filtered.map((broker) => (
