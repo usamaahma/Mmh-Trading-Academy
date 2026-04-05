@@ -25,9 +25,11 @@ import {
 } from "lucide-react";
 
 export default function ProfessionalForexLanding() {
-  const scrollRef = useRef(null);
+  // 🔹 FIX 1: Ref ko HTMLDivElement ki type di taake TS ko pata chale ye scrollable div hai
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const slide = (direction) => {
+  // 🔹 FIX 2: direction ko strict type ('left' | 'right') di taake 'any' wala error khatam ho
+  const slide = (direction: "left" | "right") => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth } = scrollRef.current;
       const scrollTo =
@@ -97,7 +99,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* 🔹 NEW: THE 3-STEP PROCESS (Informatice Content) */}
+      {/* 🔹 THE 3-STEP PROCESS */}
       <section className="py-16 bg-black/20">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
@@ -107,13 +109,13 @@ export default function ProfessionalForexLanding() {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { step: "01", title: "Identify POI", desc: "Locate Point of Interest using HTF Orderflow and Liquidity voids.", icon: <Search /> },
-              { step: "02", title: "Refine Entry", desc: "Wait for LTF Displacement and Market Structure Shift (mSS).", icon: <MousePointer2 /> },
-              { step: "03", title: "Scale Position", desc: "Secure partials at external liquidity and ride the institutional trend.", icon: <TrendingUp /> },
+              { step: "01", title: "Identify POI", desc: "Locate Point of Interest using HTF Orderflow and Liquidity voids.", icon: <Search size={24} /> },
+              { step: "02", title: "Refine Entry", desc: "Wait for LTF Displacement and Market Structure Shift (mSS).", icon: <MousePointer2 size={24} /> },
+              { step: "03", title: "Scale Position", desc: "Secure partials at external liquidity and ride the institutional trend.", icon: <TrendingUp size={24} /> },
             ].map((item, i) => (
               <div key={i} className="relative p-8 bg-[#0D1117] border border-white/5 rounded-2xl group">
                 <div className="text-5xl font-black text-white/5 absolute top-4 right-4">{item.step}</div>
-                <div className="text-cyan-400 mb-4">{React.cloneElement(item.icon, { size: 24 })}</div>
+                <div className="text-cyan-400 mb-4">{item.icon}</div>
                 <h3 className="text-white font-bold uppercase tracking-widest text-sm mb-2">{item.title}</h3>
                 <p className="text-[11px] text-slate-500 leading-relaxed uppercase">{item.desc}</p>
               </div>
@@ -130,12 +132,12 @@ export default function ProfessionalForexLanding() {
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { pair: "XAUUSD (GOLD)", icon: <Flame />, focus: "London Liquidity Sweeps", desc: "Master the 8:00 AM NY Open volatility. We target gold's high-probability manipulation legs and hunt the 5m Order Blocks." },
-              { pair: "NAS100 (TECH)", icon: <TrendingUp />, focus: "Opening Range Breakouts", desc: "Algorithmically hunting the liquidity above/below the previous day's high/low on tech indices with precision timing." },
-              { pair: "BTCUSD (CRYPTO)", icon: <Coins />, focus: "Weekend Liquidity Loops", desc: "Understand how BTC rebalances FVG gaps during low-volume sessions. Trade the institutional footprint in a 24/7 market." },
+              { pair: "XAUUSD (GOLD)", icon: <Flame size={32} />, focus: "London Liquidity Sweeps", desc: "Master the 8:00 AM NY Open volatility. We target gold's high-probability manipulation legs and hunt the 5m Order Blocks." },
+              { pair: "NAS100 (TECH)", icon: <TrendingUp size={32} />, focus: "Opening Range Breakouts", desc: "Algorithmically hunting the liquidity above/below the previous day's high/low on tech indices with precision timing." },
+              { pair: "BTCUSD (CRYPTO)", icon: <Coins size={32} />, focus: "Weekend Liquidity Loops", desc: "Understand how BTC rebalances FVG gaps during low-volume sessions. Trade the institutional footprint in a 24/7 market." },
             ].map((item, i) => (
               <div key={i} className="p-8 bg-[#0D1117] border border-white/5 rounded-2xl hover:border-cyan-500/50 transition-all group">
-                <div className="text-cyan-400 mb-6 group-hover:scale-110 transition-transform">{React.cloneElement(item.icon, { size: 32 })}</div>
+                <div className="text-cyan-400 mb-6 group-hover:scale-110 transition-transform">{item.icon}</div>
                 <h3 className="text-lg font-bold text-white uppercase mb-2 tracking-tighter">{item.pair}</h3>
                 <p className="text-[10px] text-cyan-500 font-bold uppercase mb-4 tracking-[0.2em]">{item.focus}</p>
                 <p className="text-xs text-slate-500 leading-relaxed font-sans">{item.desc}</p>
@@ -145,7 +147,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* 🔹 NEW: LIVE MARKET STREAM (Informative) */}
+      {/* 🔹 LIVE MARKET STREAM */}
       <section className="py-16 bg-gradient-to-r from-cyan-500/5 to-transparent">
         <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
           <div>
@@ -253,21 +255,18 @@ export default function ProfessionalForexLanding() {
           </div>
         </div>
       </section>
+
+      {/* 🔹 INSTITUTIONAL EDGE */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="relative p-8 md:p-12 bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:border-cyan-500/30 transition-all">
-            {/* Decorative Background Glow */}
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 blur-[80px] rounded-full"></div>
-
             <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start">
-              {/* Side Accent Line */}
               <div className="hidden md:block w-1 h-32 bg-gradient-to-b from-cyan-500 to-transparent rounded-full mt-2"></div>
-
               <div className="space-y-4">
                 <h2 className={`${playfair.className} text-2xl md:text-3xl text-white uppercase italic tracking-tight`}>
                   The Institutional <span className="text-cyan-400">Edge.</span>
                 </h2>
-
                 <p className="text-sm md:text-base text-slate-400 leading-relaxed font-light">
                   Trading is not about predicting the future; it's about following the money.
                   Retail traders often get trapped in "smart money" manipulations because they
@@ -276,7 +275,6 @@ export default function ProfessionalForexLanding() {
                   By understanding the footprint of central banks, you stop being the exit liquidity
                   and start trading alongside the dominant market force.
                 </p>
-
                 <div className="inline-flex items-center gap-2 text-[10px] font-bold text-cyan-500 uppercase tracking-[0.2em] pt-2 border-b border-cyan-500/30 pb-1">
                   Precision Execution Protocol
                 </div>
@@ -285,7 +283,8 @@ export default function ProfessionalForexLanding() {
           </div>
         </div>
       </section>
-      {/* 🔹 NEW: RISK PROTECTION (Informative Content) */}
+
+      {/* 🔹 RISK PROTECTION */}
       <section className="py-16 border-y border-white/5 bg-[#0D1117]/10">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h2 className={`${playfair.className} text-3xl text-white uppercase italic mb-12`}>
@@ -293,13 +292,13 @@ export default function ProfessionalForexLanding() {
           </h2>
           <div className="grid md:grid-cols-4 gap-4">
             {[
-              { label: "Max Daily DD", val: "3%", icon: <Lock /> },
-              { label: "Max Total DD", val: "8%", icon: <ShieldCheck /> },
-              { label: "Profit Target", val: "10%", icon: <Target /> },
-              { label: "Leverage", val: "1:100", icon: <Zap /> },
+              { label: "Max Daily DD", val: "3%", icon: <Lock size={18} /> },
+              { label: "Max Total DD", val: "8%", icon: <ShieldCheck size={18} /> },
+              { label: "Profit Target", val: "10%", icon: <Target size={18} /> },
+              { label: "Leverage", val: "1:100", icon: <Zap size={18} /> },
             ].map((item, i) => (
               <div key={i} className="p-6 border border-white/5 rounded-xl bg-black/40">
-                <div className="text-slate-600 mb-3 flex justify-center">{React.cloneElement(item.icon, { size: 18 })}</div>
+                <div className="text-slate-600 mb-3 flex justify-center">{item.icon}</div>
                 <p className="text-[10px] uppercase text-slate-500 tracking-[0.2em] mb-1">{item.label}</p>
                 <p className="text-xl font-bold text-white">{item.val}</p>
               </div>
