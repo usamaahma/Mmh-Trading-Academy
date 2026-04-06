@@ -6,6 +6,7 @@ import AnalysisForm from "./analysis";
 import ManageCourses from "../../components-admin/managecourses";
 import AdminBrokersPage from "./brokers";
 import AdminContactPanel from "./contactus";
+import ResultsManager from "./results";
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("signals");
@@ -44,6 +45,8 @@ export default function AdminPage() {
           {activeTab === "courses" && <ManageCourses />}
           {activeTab === "brokers" && <AdminBrokersPage />}
           {activeTab === "contactus" && <AdminContactPanel />}
+          {activeTab === "results" && <ResultsManager />}
+
         </div>
       </main>
     </div>

@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
+import Image from "next/image";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -96,11 +97,15 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 lg:px-10 py-4">
 
           {/* LOGO */}
-          <Link href="/" className="flex flex-col items-center group shrink-0 text-white">
-            <span className="text-xl md:text-2xl font-black tracking-tighter uppercase group-hover:text-cyan-400 transition-colors">
-              MMH <span className="text-cyan-400 group-hover:text-white">TRADING</span>
-            </span>
-            <span className="text-sm uppercase text-slate-500 font-bold">Academy</span>
+          <Link href="/" className="flex items-center shrink-0">
+            <Image
+              src="/mmhlogo.png"
+              alt="MMH Trading Academy"
+              width={120}
+              height={100}
+              className="object-contain"
+              priority
+            />
           </Link>
 
           {/* DESKTOP MENU */}
@@ -129,7 +134,11 @@ export default function Navbar() {
                 </div>
               </div>
             </li>
-
+            <li className="relative group py-2 cursor-pointer hover:text-cyan-400 transition-all">
+              <Link href="/results" className="flex items-center gap-1">
+                Results
+              </Link>
+            </li>
             {/* BROKERS DROPDOWN */}
             <li className="relative group py-2 cursor-pointer hover:text-cyan-400 transition-all">
               <Link href="/brokers" className="flex items-center gap-1">
