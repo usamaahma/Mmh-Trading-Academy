@@ -7,27 +7,29 @@ export async function GET() {
   try {
     await dbConnect();
 
-    // Check karein agar pehle se koi admin hai to error de do (Security)
-    const adminExists = await User.findOne({ role: "ADMIN" });
-    if (adminExists) {
-      return NextResponse.json({ error: "Admin already exists!" });
+    // 1. Check karein agar 'mmhfadii' pehle se hai
+    const userExists = await User.findOne({ username: "mmhfadii" });
+    if (userExists) {
+      return NextResponse.json({ error: "User 'mmhfadii' already exists!" });
     }
 
-    // Password ko hash karein
-    const hashedPassword = await bcrypt.hash("admin123", 12); // "admin123" aapka password hai
+    // 2. Naya Password hash karein
+    const hashedPassword = await bcrypt.hash("Fahad@/123", 12); 
 
-    // Pehla Admin User banayein
-    const newAdmin = await User.create({
-      username: "master_admin", // Aapka username
+    // 3. Admin User banayein with new credentials
+    await User.create({
+      username: "mmhfadii", 
       password: hashedPassword,
       role: "ADMIN"
     });
 
     return NextResponse.json({ 
       success: true, 
-      message: "First Admin Created!",
-      username: "mmhfadii",
-      password: "Fahad@/123"
+      message: "Admin 'mmhfadii' created successfully!",
+      login_details: {
+        username: "mmhfadii",
+        password: "Fahad@/123"
+      }
     });
   } catch (error) {
     return NextResponse.json({ error: error.message });
