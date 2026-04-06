@@ -100,7 +100,7 @@ export default function Navbar() {
             <span className="text-xl md:text-2xl font-black tracking-tighter uppercase group-hover:text-cyan-400 transition-colors">
               MMH <span className="text-cyan-400 group-hover:text-white">TRADING</span>
             </span>
-            <span className="text-[7px] tracking-[0.4em] uppercase text-slate-500 font-bold">Academy</span>
+            <span className="text-sm uppercase text-slate-500 font-bold">Academy</span>
           </Link>
 
           {/* DESKTOP MENU */}

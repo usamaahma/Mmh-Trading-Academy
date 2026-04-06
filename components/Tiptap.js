@@ -3,84 +3,76 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
-import { Bold, Italic, List, ImageIcon, Heading1, Heading2, Quote, Code } from "lucide-react";
-import { useEffect } from "react";
+import TextAlign from "@tiptap/extension-text-align";
+import Toolbar from "./toolbar"; // Check karein aapka file name 'toolbar' hai ya 'TiptapToolbar'
+import { useEffect, forwardRef, useImperativeHandle } from "react";
 
-const Tiptap = ({ value, onChange, onImageUpload }) => {
-    const editor = useEditor({
-        extensions: [
-            StarterKit,
-            Image.configure({
-                HTMLAttributes: {
-                    class: 'rounded-lg max-w-full h-auto border border-slate-200 my-4',
-                },
-            }),
-            Link.configure({ openOnClick: false }),
-        ],
-        content: value,
-        immediatelyRender: false, // <--- YE LINE ERROR KHATAM KAREGI
-        onUpdate: ({ editor }) => {
-            onChange(editor.getHTML());
+const Tiptap = forwardRef(({ value, onChange, onImageUploadClick }, ref) => {
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: { levels: [1, 2, 3] },
+      }),
+      // FIX 1: Image extension ko thoda base64 support aur relaxed banaya
+      Image.configure({
+        allowBase64: true,
+        inline: true,
+        HTMLAttributes: {
+          class:
+            "rounded-2xl border border-white/10 my-6 max-w-full shadow-2xl block mx-auto",
         },
-        editorProps: {
-            attributes: {
-                class: "prose prose-sm focus:outline-none min-h-[250px] p-5 text-slate-900",
-            },
-        },
-    });
+      }),
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+        alignments: ["left", "center", "right"],
+      }),
+      Link.configure({ openOnClick: false }),
+    ],
+    content: value,
+    immediatelyRender: false,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
+    editorProps: {
+      attributes: {
+        class:
+          "prose prose-invert max-w-none bg-black/40 border-x border-b border-white/10 p-8 rounded-b-2xl min-h-[400px] outline-none focus:border-cyan-500/20 transition-all text-sm leading-relaxed custom-editor",
+      },
+    },
+  });
 
-    // Sync content if changed from outside
-    useEffect(() => {
-        if (editor && value !== editor.getHTML()) {
-            editor.commands.setContent(value);
-        }
-    }, [value, editor]);
+  // FIX 2: insertImage ko chain process ke saath robust banaya
+  useImperativeHandle(ref, () => ({
+    insertImage: (url) => {
+      if (editor) {
+        // Focus kar ke image insert karna zaroori hai
+        editor.chain().focus().setImage({ src: url }).run();
 
-    // Agar editor ready nahi hai to kuch render mat karo (Hydration fix)
-    if (!editor) {
-        return <div className="min-h-[250px] bg-white rounded-2xl animate-pulse" />;
+        // Forcefully update state taake save ho jaye
+        const newHtml = editor.getHTML();
+        onChange(newHtml);
+      }
+    },
+  }));
+
+  useEffect(() => {
+    // FIX 3: Strict check taake typing ke waqt content reset na ho
+    if (editor && value !== editor.getHTML() && !editor.isFocused) {
+      // Small timeout taake hydration ke baad update ho
+      setTimeout(() => {
+        editor.commands.setContent(value, false);
+      }, 10);
     }
+  }, [value, editor]);
 
-    const addImage = () => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = "image/*";
-        input.onchange = async () => {
-            const file = input.files[0];
-            if (file) {
-                const url = await onImageUpload(file);
-                if (url) editor.chain().focus().setImage({ src: url }).run();
-            }
-        };
-        input.click();
-    };
+  return (
+    <div className="w-full shadow-2xl overflow-hidden rounded-2xl border border-white/5">
+      {/* Ensure editor exist karta ho toolbar dikhane se pehle */}
+      {editor && <Toolbar editor={editor} onImageClick={onImageUploadClick} />}
+      <EditorContent editor={editor} />
+    </div>
+  );
+});
 
-    return (
-        <div className="border border-white/10 rounded-2xl overflow-hidden bg-white shadow-xl">
-            <div className="bg-slate-50 p-2 flex gap-1 border-b border-slate-200 flex-wrap sticky top-0 z-10">
-                <MenuButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")}><Bold size={16} /></MenuButton>
-                <MenuButton onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")}><Italic size={16} /></MenuButton>
-                <MenuButton onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} active={editor.isActive("heading", { level: 1 })}><Heading1 size={16} /></MenuButton>
-                <MenuButton onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive("bulletList")}><List size={16} /></MenuButton>
-                <div className="w-[1px] h-6 bg-slate-300 mx-1 self-center" />
-                <button type="button" onClick={addImage} className="p-2 rounded hover:bg-cyan-100 text-cyan-600 transition-colors"><ImageIcon size={18} /></button>
-            </div>
-
-            <div className="bg-white max-h-[500px] overflow-y-auto">
-                <EditorContent editor={editor} />
-            </div>
-        </div>
-    );
-};
-
-const MenuButton = ({ onClick, active, children }) => (
-    <button
-        type="button"
-        onClick={onClick}
-        className={`p-2 rounded transition-all ${active ? "bg-cyan-500 text-white" : "text-slate-600 hover:bg-slate-200"}`}
-    >
-        {children}
-    </button>
-);
-
+Tiptap.displayName = "Tiptap";
 export default Tiptap;
