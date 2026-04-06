@@ -7,16 +7,20 @@ export async function GET() {
   try {
     await dbConnect();
 
-    // 1. Check karein agar 'mmhfadii' pehle se hai
+    // 1. Check karein ke mmhfadii pehle se to nahi hai
     const userExists = await User.findOne({ username: "mmhfadii" });
+    
     if (userExists) {
-      return NextResponse.json({ error: "User 'mmhfadii' already exists!" });
+      // Agar user hai, to usay Admin role assign kar do (Just in case)
+      userExists.role = "ADMIN";
+      await userExists.save();
+      return NextResponse.json({ message: "User 'mmhfadii' already exists and is now ADMIN." });
     }
 
-    // 2. Naya Password hash karein
+    // 2. Password Hashing
     const hashedPassword = await bcrypt.hash("Fahad@/123", 12); 
 
-    // 3. Admin User banayein with new credentials
+    // 3. Admin Create karein
     await User.create({
       username: "mmhfadii", 
       password: hashedPassword,
@@ -25,13 +29,11 @@ export async function GET() {
 
     return NextResponse.json({ 
       success: true, 
-      message: "Admin 'mmhfadii' created successfully!",
-      login_details: {
-        username: "mmhfadii",
-        password: "Fahad@/123"
-      }
+      message: "Live Admin 'mmhfadii' created successfully!",
+      domain: "mmhtradingacademy.com"
     });
+
   } catch (error) {
-    return NextResponse.json({ error: error.message });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
