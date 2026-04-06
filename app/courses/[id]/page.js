@@ -15,35 +15,27 @@ export default function CourseDetailPage() {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
-useEffect(() => {
-  const fetchCourse = async () => {
-    try {
-      const res = await fetch(`/api/course/${id}`);
-      const json = await res.json();
-      
-      // YE LINE ADD KAREIN CONSOLE CHECK KE LIYE
-      console.log("FULL API RESPONSE:", json);
 
-      if (json.success) {
-        setCourse(json.data);
-        
-        // SPECIFICALLY SUBHEADINGS CHECK KARNE KE LIYE
-        json.data.sections.forEach((sec, i) => {
-          console.log(`Module ${i+1} Subheadings:`, sec.subheadings);
-        });
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        const res = await fetch(`/api/course/${id}`);
+        const json = await res.json();
 
-      } else {
-        console.error("Course not found in database");
+        if (json.success) {
+          setCourse(json.data);
+        } else {
+          console.error("Course not found");
+        }
+      } catch (err) {
+        console.error("Fetch Error:", err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Fetch Error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  if (id) fetchCourse();
-}, [id]);
+    if (id) fetchCourse();
+  }, [id]);
 
   if (loading)
     return (
@@ -54,7 +46,7 @@ useEffect(() => {
 
   if (!course)
     return (
-      <div className="text-white p-20 text-center font-bold uppercase tracking-widest">
+      <div className="text-white p-20 text-center font-bold uppercase tracking-widest bg-[#010409] min-h-screen">
         COURSE NOT FOUND
       </div>
     );
@@ -65,7 +57,7 @@ useEffect(() => {
         {/* BACK BUTTON */}
         <Link
           href="/courses"
-          className="inline-flex items-center gap-2 text-slate-500 hover:text-cyan-500 transition-colors mb-6 text-[10px] font-black uppercase tracking-widest"
+          className="inline-flex items-center gap-2 text-slate-500 hover:text-cyan-500 transition-colors mb-6 text-[10px] font-black uppercase tracking-widest mt-10"
         >
           <ArrowLeft size={14} /> Back to Courses
         </Link>
@@ -76,7 +68,7 @@ useEffect(() => {
             {course.courseName}
           </h1>
           <div
-            className="text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] border-l-2 border-cyan-500 pl-6 py-1 prose prose-invert max-w-2xl"
+            className="text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] border-l-2 border-cyan-500 pl-6 py-1 max-w-2xl"
             dangerouslySetInnerHTML={{ __html: course.shortDescription }}
           />
         </header>
@@ -104,7 +96,6 @@ useEffect(() => {
                   {section.heading}
                 </span>
 
-                {/* SUBHEADINGS MINI LIST - FIXED LOGIC */}
                 {section.subheadings && section.subheadings.length > 0 ? (
                   <div className="space-y-2 border-t border-white/5 pt-4 mt-auto">
                     {section.subheadings.slice(0, 4).map((sub, sIdx) => (
@@ -169,8 +160,26 @@ useEffect(() => {
                 </div>
               )}
 
+              {/* --- UPDATED CONTENT AREA (WHITE TEXT, CYAN HEADINGS) --- */}
               <div
-                className="text-slate-400 text-[11px] md:text-sm leading-relaxed mb-10 uppercase font-medium tracking-wide prose prose-invert max-w-none"
+                className="text-white text-[15px] leading-relaxed mb-10
+                  /* Bullets & Lists styling */
+                  [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-4 [&_ul]:marker:text-cyan-500
+                  [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-4 [&_ol]:marker:text-cyan-500
+                  [&_li]:mb-2 [&_li]:text-white
+                  
+                  /* Paragraphs White */
+                  [&_p]:text-white [&_p]:mb-4
+                  
+                  /* Headings & Bold are Cyan */
+                  [&_strong]:text-cyan-500 [&_strong]:font-black
+                  [&_h1]:text-2xl [&_h1]:font-black [&_h1]:text-cyan-500 [&_h1]:mb-4 [&_h1]:uppercase [&_h1]:italic
+                  [&_h2]:text-xl [&_h2]:font-black [&_h2]:text-cyan-500 [&_h2]:mb-3 [&_h2]:uppercase [&_h2]:italic
+                  [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-cyan-500 [&_h3]:mb-2
+                  
+                  /* Links & Images */
+                  [&_a]:text-cyan-400 [&_a]:underline
+                  [&_img]:rounded-2xl [&_img]:border [&_img]:border-white/10"
                 dangerouslySetInnerHTML={{ __html: section.description }}
               />
 
@@ -250,7 +259,9 @@ useEffect(() => {
                     {faq.question}
                   </h4>
                   <div
-                    className="text-slate-500 text-[10px] md:text-[11px] leading-relaxed font-medium uppercase tracking-wider pl-6 border-l border-white/10 group-hover:border-cyan-500 transition-colors"
+                    className="text-white text-[10px] md:text-[11px] leading-relaxed font-medium pl-6 border-l border-white/10 group-hover:border-cyan-500 transition-colors
+                    /* FAQ Content styling */
+                    [&_p]:mb-2 [&_strong]:text-cyan-500 [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:marker:text-cyan-500"
                     dangerouslySetInnerHTML={{ __html: faq.answer }}
                   />
                 </div>

@@ -18,6 +18,7 @@ import {
   FaFacebookF,
 } from "react-icons/fa";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -37,14 +38,16 @@ export default function Footer() {
 
           {/* LOGO & DESCRIPTION (Centered) */}
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-6">
-            <div className="flex flex-col leading-tight cursor-pointer group">
-              <span className="text-3xl font-black tracking-tighter text-white group-hover:text-cyan-400 transition-colors uppercase">
-                MMH <span className="text-cyan-400 group-hover:text-white transition-colors">TRADING</span>
-              </span>
-              <span className="text-[9px] tracking-[0.4em] uppercase text-slate-500 font-bold text-center lg:text-left">
-                Academy of Excellence
-              </span>
-            </div>
+            <Link href="/" className="flex items-center shrink-0">
+              <Image
+                src="/mmhlogo.png"
+                alt="MMH Trading Academy"
+                width={120}
+                height={100}
+                className="object-contain"
+                priority
+              />
+            </Link>
             <p className="text-[12px] leading-relaxed max-w-sm text-slate-500">
               Pakistan's premier trading protocol. Empowering the next generation of institutional traders through SMC, ICT, and algorithmic analysis.
             </p>
