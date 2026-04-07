@@ -23,6 +23,8 @@ export default function AdminSidebar({ activeTab, setActiveTab }) {
     { id: "courses", label: "Manage Courses", icon: <BookOpen size={18} /> },
     { id: "brokers", label: "Add Brokers", icon: <Briefcase size={18} /> },
     { id: "contactus", label: "Contact Us Forms", icon: <Inbox size={18} /> },
+    { id: "leads", label: "Lead Forms", icon: <Inbox size={18} /> },
+
   ];
 
   // 👈 Logout Function
@@ -51,8 +53,8 @@ export default function AdminSidebar({ activeTab, setActiveTab }) {
             key={item.id}
             onClick={() => setActiveTab(item.id)}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === item.id
-                ? "bg-cyan-500 text-black shadow-[0_0_20px_rgba(34,211,238,0.2)]"
-                : "text-slate-400 hover:bg-white/5 hover:text-white"
+              ? "bg-cyan-500 text-black shadow-[0_0_20px_rgba(34,211,238,0.2)]"
+              : "text-slate-400 hover:bg-white/5 hover:text-white"
               }`}
           >
             {item.icon} {item.label}

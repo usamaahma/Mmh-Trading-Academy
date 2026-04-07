@@ -8,6 +8,7 @@ import AdminBrokersPage from "./brokers";
 import AdminContactPanel from "./contactus";
 import ResultsManager from "./results";
 import UserManager from "./UserManager";
+import AdminLeadPanel from "./leads";
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("signals");
@@ -48,7 +49,7 @@ export default function AdminPage() {
           {activeTab === "contactus" && <AdminContactPanel />}
           {activeTab === "results" && <ResultsManager />}
           {activeTab === "users" && <UserManager />}
-
+          {activeTab === "leads" && <AdminLeadPanel />}
         </div>
       </main>
     </div>
