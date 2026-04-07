@@ -180,16 +180,16 @@ export default function Footer() {
 
         {/* 🔹 BOTTOM SECTION: FOOTNOTE */}
         <div className="pt-8 border-t border-white/5 text-[9px] text-slate-600 uppercase font-bold tracking-[0.2em] flex flex-col md:flex-row justify-between items-center gap-6">
-          <p>© {currentYear} MMH Protocol. All Systems Operational.</p>
+          <p>© {currentYear} MMH Protocol. All Rights Reserved.</p>
           <p className="max-w-[400px] text-center md:text-center leading-loose  ">
-              Risk Warning: Trading involves significant financial exposure. Execution requires precision.
-            </p>
+            Risk Warning: Trading involves significant financial exposure. Execution requires precision.
+          </p>
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1.5 text-cyan-500/40 hover:text-cyan-500 transition-colors">
               <TrendingUp size={12} /> Elite Performance
             </span>
             <span className="hidden md:inline text-white/5">|</span>
-            
+
           </div>
         </div>
       </div>
