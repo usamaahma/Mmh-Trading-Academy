@@ -34,6 +34,8 @@ import {
   ThumbsUp,
   Award,
 } from "lucide-react";
+import PopupForm from "@/components/leads";
+import Link from "next/link";
 
 export default function ProfessionalForexLanding() {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -48,6 +50,20 @@ export default function ProfessionalForexLanding() {
   const [positionSize, setPositionSize] = useState<number>(0);
   const [riskAmount, setRiskAmount] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Popup State
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [popupContext, setPopupContext] = useState<{
+    type: "button" | "cta" | "course";
+    label?: string;
+    courseName?: string;
+  }>({ type: "button" });
+
+  // Function to open popup
+  const openPopup = (type: "button" | "cta" | "course", courseName?: string) => {
+    setPopupContext({ type, label: type, courseName });
+    setIsPopupOpen(true);
+  };
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -114,7 +130,7 @@ export default function ProfessionalForexLanding() {
     { n: "New York", i: <Zap size={24} />, p: "XAUUSD, NAS100", v: "100-750 Pips", start: 13, end: 22, h: "13:00 - 22:00" },
   ];
 
-  // STUDENT FEEDBACK DATA - 12 cards with random Pakistani names + 2 constructive criticism
+  // STUDENT FEEDBACK DATA
   const studentFeedback = [
     { n: "Abdullah R.", l: "Karachi, PK", p: "+$3,400", c: "MMH SMC Mastery", pr: 92, fb: "Finally someone who teaches real SMC! The MMH course completely changed my approach. No more guessing, just pure liquidity concepts.", stars: 5, type: "success" },
     { n: "Hira K.", l: "Lahore, PK", p: "+$5,200", c: "MSNR Framework", pr: 78, fb: "MSNR is a game changer. Entry clarity has improved 10x. Still learning but already profitable after 2 months.", stars: 5, type: "success" },
@@ -126,12 +142,10 @@ export default function ProfessionalForexLanding() {
     { n: "Zainab T.", l: "Quetta, PK", p: "+$700", c: "SMC Fundamentals", pr: 45, fb: "Beginner friendly but still advanced. Loving the community and weekly live sessions.", stars: 4, type: "success" },
     { n: "Shahzad A.", l: "Sialkot, PK", p: "+$9,700", c: "MMH Trading Academy", pr: 72, fb: "The displacement entry technique alone was worth the course fee. Real edge in the markets.", stars: 5, type: "success" },
     { n: "Mehwish N.", l: "Gujranwala, PK", p: "+$2,300", c: "MSNR Framework", pr: 60, fb: "Finally understand market structure shifts. My winrate went from 40% to 65% in 3 months.", stars: 5, type: "success" },
-    // Constructive criticism cards (1-2 positive criticism)
     { n: "Ali H.", l: "Karachi, PK", p: "+$2,100", c: "MMH Signals", pr: 40, fb: "Signals are good but sometimes late. Would love faster delivery during London session. Overall still profitable though!", stars: 4, type: "constructive" },
     { n: "Sara K.", l: "Lahore, PK", p: "+$600", c: "MMH Trading Academy", pr: 58, fb: "Course content is 10/10 but I wish there were more live trading examples. The theory is solid but application needs more demos. Still recommend it!", stars: 4, type: "constructive" },
   ];
 
-  // Get visible cards (3 at a time for carousel)
   const getVisibleCards = () => {
     const cards = [];
     for (let i = 0; i < 3; i++) {
@@ -141,10 +155,32 @@ export default function ProfessionalForexLanding() {
     return cards;
   };
 
+  // Course data for mapping
+  const courses = [
+    {
+      t: "SMART MONEY CONCEPTS (SMC)",
+      l: "Entry",
+      p: "$99",
+      d: "The core logic of market structure, FVG, inducement, and retail liquidity pools.",
+    },
+    {
+      t: "MSNR",
+      l: "Master",
+      p: "$248",
+      d: "Entry Clarity Through Structure, Trade Where Market Reacts",
+    },
+    {
+      t: "MMH Trading Strategies",
+      l: "Pro",
+      p: "$500",
+      d: "Master MMH trading strategies for consistent profits.",
+    },
+  ];
+
   return (
     <main className={`${poppinsClass} min-h-screen bg-[#010409] text-slate-400 selection:bg-cyan-500/30 overflow-x-hidden`}>
 
-      {/* SECTION 8: MARKET NEWS TICKER */}
+      {/* MARKET NEWS TICKER */}
       <div className="w-full bg-[#05080f] border-b border-white/5 py-2 overflow-hidden whitespace-nowrap relative z-[100]">
         <div className="flex animate-marquee items-center gap-10">
           {[
@@ -188,10 +224,16 @@ export default function ProfessionalForexLanding() {
               We teach how smart money really moves.
             </p>
             <div className="flex gap-3 pt-4">
-              <button className="bg-cyan-500 text-black px-6 py-4 rounded font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-all">
+              <button
+                onClick={() => openPopup("cta")}
+                className="bg-cyan-500 text-black px-6 py-4 rounded font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-all"
+              >
                 Enter Terminal
               </button>
-              <button className="bg-white/5 border border-white/10 text-white px-6 py-4 rounded font-bold text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">
+              <button
+                onClick={() => openPopup("cta")}
+                className="bg-white/5 border border-white/10 text-white px-6 py-4 rounded font-bold text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all"
+              >
                 System Audit
               </button>
             </div>
@@ -234,7 +276,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* METHODOLOGY */}
+      {/* METHODOLOGY SECTION - Adding popup to these cards too */}
       <section className="py-16 bg-black/20">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
@@ -267,7 +309,8 @@ export default function ProfessionalForexLanding() {
             ].map((item, i) => (
               <div
                 key={i}
-                className="relative p-8 bg-[#0D1117] border border-white/5 rounded-2xl group"
+                onClick={() => openPopup("button", item.title)}
+                className="relative p-8 bg-[#0D1117] border border-white/5 rounded-2xl group cursor-pointer hover:border-cyan-500/50 transition-all"
               >
                 <div className="text-5xl font-black text-white/5 absolute top-4 right-4">
                   {item.step}
@@ -285,107 +328,102 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* SECTION 7: RISK MANAGEMENT CALCULATOR */}
+      {/* RISK MANAGEMENT CALCULATOR */}
       <section className="py-12 md:py-20 px-4 bg-[#010409]">
-  <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-    
-    {/* Left Column: Text & Results */}
-    <div className="lg:col-span-5 space-y-6 text-center lg:text-left">
-      <h2 className={`${playfairClass} text-3xl md:text-4xl text-white uppercase italic leading-tight`}>
-        Accurate <span className="text-cyan-400">Risk Control.</span>
-      </h2>
-      <p className="text-[10px] md:text-[11px] text-slate-500 font-bold uppercase leading-relaxed tracking-widest max-w-md mx-auto lg:mx-0">
-        Smart trading starts with risk management. Use our calculator to find the right position size for your account.
-      </p>
-      
-      {/* Result Cards - Responsive Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto lg:mx-0">
-        <div className="p-5 bg-[#0D1117] border border-white/5 rounded-2xl shadow-xl">
-          <p className="text-[9px] text-slate-600 uppercase font-black mb-2 tracking-widest">Risk Amount</p>
-          <p className="text-xl md:text-2xl font-black text-white">${riskAmount}</p>
-        </div>
-        <div className="p-5 bg-[#0D1117] border border-cyan-500/20 rounded-2xl shadow-xl shadow-cyan-500/5">
-          <p className="text-[9px] text-cyan-500 uppercase font-black mb-2 tracking-widest">Recommended Lots</p>
-          <p className="text-xl md:text-2xl font-black text-cyan-400">{positionSize}</p>
-        </div>
-      </div>
-    </div>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
-    {/* Right Column: Interactive Calculator Card */}
-    <div className="lg:col-span-7 bg-[#0D1117] border border-white/5 p-6 md:p-10 lg:p-12 rounded-3xl md:rounded-[2.5rem] shadow-2xl w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-        
-        {/* Left Side Inputs */}
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Account Balance ($)</label>
-            <input
-              type="number"
-              value={balance}
-              onChange={(e) => setBalance(Number(e.target.value))}
-              className="w-full bg-[#05080f] border border-white/10 rounded-xl md:rounded-2xl p-4 text-white font-bold outline-none focus:border-cyan-500/50 transition-colors text-sm"
-              placeholder="e.g. 10000"
-            />
-          </div>
-          
-          <div className="space-y-3">
-            <div className="flex justify-between items-center px-1">
-              <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Risk Percentage</label>
-              <span className="text-[10px] font-black text-cyan-400 uppercase bg-cyan-400/10 px-2 py-0.5 rounded">{riskPercent}%</span>
-            </div>
-            <input
-              type="range"
-              min="0.25"
-              max="5"
-              step="0.25"
-              value={riskPercent}
-              onChange={(e) => setRiskPercent(Number(e.target.value))}
-              className="w-full accent-cyan-500 h-1.5 bg-white/5 rounded-full appearance-none cursor-pointer"
-            />
-          </div>
-        </div>
-
-        {/* Right Side Inputs */}
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Stop Loss (Pips)</label>
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => setStopLoss(s => Math.max(1, s - 5))} 
-                className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 active:scale-95 transition-all"
-              >
-                <Minus size={16} />
-              </button>
-              <input
-                type="number"
-                value={stopLoss}
-                onChange={(e) => setStopLoss(Number(e.target.value))}
-                className="flex-grow min-w-[60px] bg-[#05080f] border border-white/10 rounded-xl md:rounded-2xl p-3 text-white font-bold text-center outline-none focus:border-cyan-500/50 transition-colors text-sm"
-              />
-              <button 
-                onClick={() => setStopLoss(s => s + 5)} 
-                className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 active:scale-95 transition-all"
-              >
-                <Plus size={16} />
-              </button>
-            </div>
-          </div>
-          
-          {/* Info Badge */}
-          <div className="p-4 md:p-6 bg-cyan-500/5 border border-cyan-500/10 rounded-2xl flex items-start sm:items-center gap-4">
-            <Calculator size={24} className="text-cyan-500 opacity-40 flex-shrink-0" />
-            <p className="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase leading-tight italic">
-              Position size calculated for 1:100 leverage standard forex accounts.
+          <div className="lg:col-span-5 space-y-6 text-center lg:text-left">
+            <h2 className={`${playfairClass} text-3xl md:text-4xl text-white uppercase italic leading-tight`}>
+              Accurate <span className="text-cyan-400">Risk Control.</span>
+            </h2>
+            <p className="text-[10px] md:text-[11px] text-slate-500 font-bold uppercase leading-relaxed tracking-widest max-w-md mx-auto lg:mx-0">
+              Smart trading starts with risk management. Use our calculator to find the right position size for your account.
             </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto lg:mx-0">
+              <div className="p-5 bg-[#0D1117] border border-white/5 rounded-2xl shadow-xl">
+                <p className="text-[9px] text-slate-600 uppercase font-black mb-2 tracking-widest">Risk Amount</p>
+                <p className="text-xl md:text-2xl font-black text-white">${riskAmount}</p>
+              </div>
+              <div className="p-5 bg-[#0D1117] border border-cyan-500/20 rounded-2xl shadow-xl shadow-cyan-500/5">
+                <p className="text-[9px] text-cyan-500 uppercase font-black mb-2 tracking-widest">Recommended Lots</p>
+                <p className="text-xl md:text-2xl font-black text-cyan-400">{positionSize}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-7 bg-[#0D1117] border border-white/5 p-6 md:p-10 lg:p-12 rounded-3xl md:rounded-[2.5rem] shadow-2xl w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Account Balance ($)</label>
+                  <input
+                    type="number"
+                    value={balance}
+                    onChange={(e) => setBalance(Number(e.target.value))}
+                    className="w-full bg-[#05080f] border border-white/10 rounded-xl md:rounded-2xl p-4 text-white font-bold outline-none focus:border-cyan-500/50 transition-colors text-sm"
+                    placeholder="e.g. 10000"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center px-1">
+                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Risk Percentage</label>
+                    <span className="text-[10px] font-black text-cyan-400 uppercase bg-cyan-400/10 px-2 py-0.5 rounded">{riskPercent}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0.25"
+                    max="5"
+                    step="0.25"
+                    value={riskPercent}
+                    onChange={(e) => setRiskPercent(Number(e.target.value))}
+                    className="w-full accent-cyan-500 h-1.5 bg-white/5 rounded-full appearance-none cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Stop Loss (Pips)</label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setStopLoss(s => Math.max(1, s - 5))}
+                      className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 active:scale-95 transition-all"
+                    >
+                      <Minus size={16} />
+                    </button>
+                    <input
+                      type="number"
+                      value={stopLoss}
+                      onChange={(e) => setStopLoss(Number(e.target.value))}
+                      className="flex-grow min-w-[60px] bg-[#05080f] border border-white/10 rounded-xl md:rounded-2xl p-3 text-white font-bold text-center outline-none focus:border-cyan-500/50 transition-colors text-sm"
+                    />
+                    <button
+                      onClick={() => setStopLoss(s => s + 5)}
+                      className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 active:scale-95 transition-all"
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  onClick={() => openPopup("cta")}
+                  className="p-4 md:p-6 bg-cyan-500/5 border border-cyan-500/10 rounded-2xl flex items-start sm:items-center gap-4 cursor-pointer hover:bg-cyan-500/10 transition-all"
+                >
+                  <Calculator size={24} className="text-cyan-500 opacity-40 flex-shrink-0" />
+                  <p className="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase leading-tight italic">
+                    Position size calculated for 1:100 leverage standard forex accounts.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </section>
 
-      </div>
-    </div>
-  </div>
-</section>
-
-      {/* ASSET SPECIALIZATION */}
+      {/* ASSET SPECIALIZATION - Adding popup to cards */}
       <section className="py-16 px-4 border-y border-white/5">
         <div className="max-w-7xl mx-auto">
           <h2 className={`${playfairClass} text-3xl text-white uppercase italic mb-10`}>
@@ -414,7 +452,8 @@ export default function ProfessionalForexLanding() {
             ].map((item, i) => (
               <div
                 key={i}
-                className="p-8 bg-[#0D1117] border border-white/5 rounded-2xl hover:border-cyan-500/50 transition-all group"
+                onClick={() => openPopup("button", item.pair)}
+                className="p-8 bg-[#0D1117] border border-white/5 rounded-2xl hover:border-cyan-500/50 transition-all group cursor-pointer"
               >
                 <div className="text-cyan-400 mb-6 group-hover:scale-110 transition-transform">
                   {item.icon}
@@ -434,7 +473,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* COURSE CAROUSEL */}
+      {/* COURSE CAROUSEL - ALL course cards and view details buttons */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="mb-10 text-center">
@@ -448,28 +487,10 @@ export default function ProfessionalForexLanding() {
             ref={scrollRef}
             className="flex gap-6 overflow-x-auto scroll-smooth pb-8 no-scrollbar scrollbar-hide"
           >
-            {[
-              {
-                t: "SMART MONEY CONCEPTS (SMC)",
-                l: "Entry",
-                p: "$99",
-                d: "The core logic of market structure, FVG, inducement, and retail liquidity pools.",
-              },
-              {
-                t: "MSNR",
-                l: "Master",
-                p: "$248",
-                d: "Entry Clarity Through Structure, Trade Where Market Reacts",
-              },
-              {
-                t: "MMH Trading Strategies",
-                l: "Pro",
-                p: "$500",
-                d: "Master MMH trading strategies for consistent profits.",
-              },
-            ].map((course, i) => (
+            {courses.map((course, i) => (
               <div
                 key={i}
+                onClick={() => openPopup("course", course.t)}
                 className="min-w-[280px] md:min-w-[350px] bg-[#0D1117] border border-white/5 rounded-3xl p-8 group hover:bg-cyan-900/10 transition-all cursor-pointer"
               >
                 <span className="text-[10px] px-3 py-1 border border-cyan-500/30 text-cyan-400 rounded-full uppercase font-bold">
@@ -483,7 +504,13 @@ export default function ProfessionalForexLanding() {
                 </p>
                 <div className="flex items-center justify-between border-t border-white/5 pt-6">
                   <span className="text-white font-bold">{course.p}</span>
-                  <button className="flex items-center gap-2 text-cyan-400 text-[10px] font-bold uppercase group-hover:gap-4 transition-all">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openPopup("course", course.t);
+                    }}
+                    className="flex items-center gap-2 text-cyan-400 text-[10px] font-bold uppercase group-hover:gap-4 transition-all"
+                  >
                     View Details <ArrowRight size={14} />
                   </button>
                 </div>
@@ -507,7 +534,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* SECTION 1: FOREX MARKET HOURS & SESSION MATRIX */}
+      {/* FOREX MARKET HOURS & SESSION MATRIX - Adding popup to session cards */}
       <section className="py-20 px-4 bg-[#05080f]">
         <div className="max-w-7xl mx-auto">
           <h2 className={`${playfairClass} text-3xl text-white uppercase italic mb-10`}>
@@ -519,7 +546,11 @@ export default function ProfessionalForexLanding() {
               const isActive = status === "ACTIVE";
 
               return (
-                <div key={i} className={`bg-[#0D1117] border ${isActive ? 'border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.1)]' : 'border-white/5'} p-6 rounded-2xl transition-all relative overflow-hidden`}>
+                <div
+                  key={i}
+                  onClick={() => openPopup("button", `${s.n} Session`)}
+                  className={`bg-[#0D1117] border ${isActive ? 'border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.1)]' : 'border-white/5'} p-6 rounded-2xl transition-all relative overflow-hidden cursor-pointer hover:border-cyan-500/30`}
+                >
                   {isActive && (
                     <div className="absolute top-0 right-0 p-2">
                       <span className="flex h-2 w-2">
@@ -553,7 +584,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* SECTION 4: WEEKLY MARKET RECAP & WATCHLIST */}
+      {/* WEEKLY MARKET RECAP & WATCHLIST - Adding popup to setup cards */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className={`${playfairClass} text-3xl text-white uppercase italic mb-10`}>
@@ -567,7 +598,11 @@ export default function ProfessionalForexLanding() {
                   { t: "XAUUSD Sell-off", p: "+140 Pips", d: "Liquidity grab at NY Open." },
                   { t: "NAS100 Displacement", p: "+220 Pips", d: "Internal range expansion." }
                 ].map((setup, i) => (
-                  <div key={i} className="bg-[#0D1117] border border-white/5 p-4 rounded-2xl group">
+                  <div
+                    key={i}
+                    onClick={() => openPopup("button", setup.t)}
+                    className="bg-[#0D1117] border border-white/5 p-4 rounded-2xl group cursor-pointer hover:border-cyan-500/50 transition-all"
+                  >
                     <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl aspect-video flex flex-col items-center justify-center border border-white/10 mb-4 overflow-hidden relative">
                       <Camera className="text-slate-600 mb-2 group-hover:scale-110 transition-transform" size={32} />
                       <span className="text-[10px] text-slate-500 uppercase font-black">Chart Preview</span>
@@ -591,7 +626,11 @@ export default function ProfessionalForexLanding() {
                   { p: "BTCUSD", l: "68,500 FVG", s: "Looking for bounce" },
                   { p: "AAPL", l: "172.50 Gap", s: "Institutional Rebalance" }
                 ].map((item, i) => (
-                  <div key={i} className="group border-l-2 border-cyan-500/20 pl-4 hover:border-cyan-500 transition-colors">
+                  <div
+                    key={i}
+                    onClick={() => openPopup("button", item.p)}
+                    className="group border-l-2 border-cyan-500/20 pl-4 hover:border-cyan-500 transition-colors cursor-pointer"
+                  >
                     <p className="text-xs font-black text-white uppercase mb-1">{item.p}</p>
                     <p className="text-[9px] text-cyan-400 font-bold uppercase tracking-widest">{item.l}</p>
                     <p className="text-[9px] text-slate-600 uppercase font-bold italic mt-1">{item.s}</p>
@@ -599,7 +638,12 @@ export default function ProfessionalForexLanding() {
                 ))}
               </div>
               <div className="mt-12 pt-8 border-t border-white/5 space-y-4">
-                <h4 className="text-[10px] font-black uppercase text-red-500 tracking-widest flex items-center gap-2"><AlertCircle size={14} /> High Impact News</h4>
+                <h4
+                  onClick={() => openPopup("cta")}
+                  className="text-[10px] font-black uppercase text-red-500 tracking-widest flex items-center gap-2 cursor-pointer hover:text-red-400 transition-colors"
+                >
+                  <AlertCircle size={14} /> High Impact News
+                </h4>
                 <div className="flex justify-between items-center text-[9px] font-black text-slate-500 uppercase">
                   <span>FOMC Meeting</span>
                   <span className="text-white">Wed 14:00</span>
@@ -610,7 +654,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* SECTION 5: STUDENT SUCCESS TRACKER - CAROUSEL with 12 cards + constructive feedback */}
+      {/* STUDENT SUCCESS TRACKER - Adding popup to feedback cards */}
       <section className="py-20 px-4 bg-[#05080f] relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -622,9 +666,7 @@ export default function ProfessionalForexLanding() {
             </p>
           </div>
 
-          {/* Carousel Container */}
           <div className="relative px-4 md:px-12">
-            {/* Navigation Buttons */}
             <button
               onClick={prevSlide}
               className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-[#0D1117] border border-white/10 rounded-full hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all hidden md:block"
@@ -638,25 +680,20 @@ export default function ProfessionalForexLanding() {
               <ChevronRight size={20} className="text-cyan-400" />
             </button>
 
-            {/* Carousel Slides - 3 cards visible at a time */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ease-in-out">
               {getVisibleCards().map((student, idx) => (
                 <div
                   key={idx}
-                  className={`bg-[#0D1117] border rounded-3xl p-6 transition-all duration-300 hover:scale-105 hover:border-cyan-500/50 group ${student.type === "constructive"
+                  onClick={() => openPopup("button", `Student: ${student.n}`)}
+                  className={`bg-[#0D1117] border rounded-3xl p-6 transition-all duration-300 hover:scale-105 hover:border-cyan-500/50 group cursor-pointer ${student.type === "constructive"
                     ? "border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.1)]"
                     : "border-white/5"
                     }`}
                 >
-                  {/* Quote Icon */}
                   <Quote className="text-cyan-500/20 mb-4" size={32} />
-
-                  {/* Feedback Text */}
                   <p className="text-[13px] text-slate-300 leading-relaxed mb-6 italic">
                     "{student.fb}"
                   </p>
-
-                  {/* Stars */}
                   <div className="flex gap-1 mb-4">
                     {[...Array(5)].map((_, i) => (
                       <Star
@@ -666,8 +703,6 @@ export default function ProfessionalForexLanding() {
                       />
                     ))}
                   </div>
-
-                  {/* User Info */}
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 flex items-center justify-center border border-white/10">
                       <User size={16} className="text-cyan-400" />
@@ -677,8 +712,6 @@ export default function ProfessionalForexLanding() {
                       <p className="text-[9px] text-slate-500 uppercase">{student.l}</p>
                     </div>
                   </div>
-
-                  {/* Course & Profit */}
                   <div className="flex justify-between items-center pt-4 border-t border-white/5">
                     <div>
                       <p className="text-[8px] text-slate-600 uppercase tracking-wider">Course Taken</p>
@@ -689,8 +722,6 @@ export default function ProfessionalForexLanding() {
                       <p className="text-[11px] font-bold text-green-500">{student.p}</p>
                     </div>
                   </div>
-
-                  {/* Progress Bar */}
                   <div className="mt-4">
                     <div className="flex justify-between text-[8px] uppercase mb-1">
                       <span className="text-slate-600">Journey Progress</span>
@@ -700,8 +731,6 @@ export default function ProfessionalForexLanding() {
                       <div className="h-full bg-cyan-500 rounded-full" style={{ width: `${student.pr}%` }}></div>
                     </div>
                   </div>
-
-                  {/* Badge for constructive feedback */}
                   {student.type === "constructive" && (
                     <div className="mt-4 flex items-center gap-2 p-2 bg-amber-500/10 border border-amber-500/20 rounded-xl">
                       <MessageCircle size={12} className="text-amber-400" />
@@ -714,7 +743,6 @@ export default function ProfessionalForexLanding() {
               ))}
             </div>
 
-            {/* Dots Indicator */}
             <div className="flex justify-center gap-2 mt-10">
               {Array.from({ length: Math.ceil(studentFeedback.length / 3) }).map((_, idx) => (
                 <button
@@ -729,21 +757,32 @@ export default function ProfessionalForexLanding() {
             </div>
           </div>
 
-          {/* Stats Summary */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 pt-8 border-t border-white/5">
-            <div className="text-center">
+            <div
+              onClick={() => openPopup("cta")}
+              className="text-center cursor-pointer hover:bg-white/5 p-4 rounded-xl transition-all"
+            >
               <p className="text-2xl font-bold text-white">92%</p>
               <p className="text-[9px] text-slate-500 uppercase tracking-wider">Success Rate</p>
             </div>
-            <div className="text-center">
+            <div
+              onClick={() => openPopup("cta")}
+              className="text-center cursor-pointer hover:bg-white/5 p-4 rounded-xl transition-all"
+            >
               <p className="text-2xl font-bold text-white">$187K+</p>
               <p className="text-[9px] text-slate-500 uppercase tracking-wider">Total Student PNL</p>
             </div>
-            <div className="text-center">
+            <div
+              onClick={() => openPopup("cta")}
+              className="text-center cursor-pointer hover:bg-white/5 p-4 rounded-xl transition-all"
+            >
               <p className="text-2xl font-bold text-white">2300+</p>
               <p className="text-[9px] text-slate-500 uppercase tracking-wider">Total Students</p>
             </div>
-            <div className="text-center">
+            <div
+              onClick={() => openPopup("cta")}
+              className="text-center cursor-pointer hover:bg-white/5 p-4 rounded-xl transition-all"
+            >
               <p className="text-2xl font-bold text-white">4.8</p>
               <p className="text-[9px] text-slate-500 uppercase tracking-wider">Avg Rating</p>
             </div>
@@ -751,7 +790,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* SECTION 6: BROKER & TOOL INTEGRATION */}
+      {/* BROKER & TOOL INTEGRATION - Adding popup to all tools */}
       <section className="py-20 px-4 border-y border-white/5">
         <div className="max-w-7xl mx-auto">
           <h2 className={`${playfairClass} text-3xl text-white uppercase italic mb-10 text-center md:text-center`}>
@@ -766,10 +805,20 @@ export default function ProfessionalForexLanding() {
               { n: "MT5", c: "border-blue-600/30 text-blue-500" },
               { n: "cTrader", c: "border-emerald-500/30 text-emerald-400" }
             ].map((tool, i) => (
-              <div key={i} className={`flex items-center gap-3 px-6 py-3 bg-[#0D1117] border rounded-full transition-all hover:scale-105 ${tool.c}`}>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">{tool.n}</span>
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]"></div>
-              </div>
+              <Link
+                key={i}
+                href={`/brokers`} // Link to courses page with query
+                className="no-underline"
+              >
+                <div
+                  className={`flex items-center gap-3 px-6 py-3 bg-[#0D1117] border rounded-full transition-all hover:scale-105 hover:bg-white/[0.02] cursor-pointer ${tool.c}`}
+                >
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+                    {tool.n}
+                  </span>
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]"></div>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -781,11 +830,21 @@ export default function ProfessionalForexLanding() {
           <h2 className={`${playfairClass} text-5xl md:text-7xl text-white uppercase italic mb-8`}>
             Stop <span className="text-slate-500">Guessing.</span> <br /> Start <span className="text-cyan-400">Winning.</span>
           </h2>
-          <button className="bg-cyan-500 text-black px-12 py-5 rounded-full font-bold text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_40px_rgba(34,211,238,0.3)]">
+          <button
+            onClick={() => openPopup("cta")}
+            className="bg-cyan-500 text-black px-12 py-5 rounded-full font-bold text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_40px_rgba(34,211,238,0.3)]"
+          >
             Join The MMH Now
           </button>
         </div>
       </section>
+
+      {/* POPUP FORM COMPONENT */}
+      <PopupForm
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        context={popupContext}
+      />
 
       {/* CSS for Ticker Animation */}
       <style jsx global>{`
