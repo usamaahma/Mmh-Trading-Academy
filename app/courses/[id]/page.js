@@ -57,7 +57,7 @@ export default function CourseDetailPage() {
         {/* BACK BUTTON */}
         <Link
           href="/courses"
-          className="inline-flex items-center gap-2 text-slate-500 hover:text-cyan-500 transition-colors mb-6 text-[9px] md:text-[10px] font-black uppercase tracking-widest mt-12 md:mt-15"
+          className="inline-flex items-center gap-2 text-slate-500 hover:text-cyan-500 transition-colors mb-6 text-[9px] md:text-[10px] font-black uppercase tracking-widest mt-12 md:mt-15 mt-15"
         >
           <ArrowLeft size={14} /> Back to Courses
         </Link>
