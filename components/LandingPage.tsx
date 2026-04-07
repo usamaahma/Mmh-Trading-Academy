@@ -228,14 +228,15 @@ export default function ProfessionalForexLanding() {
                 onClick={() => openPopup("cta")}
                 className="bg-cyan-500 text-black px-6 py-4 rounded font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-all"
               >
-                Enter Terminal
+                Get Premium Access
               </button>
-              <button
-                onClick={() => openPopup("cta")}
-                className="bg-white/5 border border-white/10 text-white px-6 py-4 rounded font-bold text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all"
-              >
-                System Audit
-              </button>
+              <Link href="/contact-us">
+                <button
+                  className="bg-white/5 border border-white/10 text-white px-8 py-4 rounded font-bold text-[10px] uppercase tracking-widest hover:bg-white/10 hover:border-cyan-500/30 transition-all shadow-sm"
+                >
+                  Contact Us
+                </button>
+              </Link>
             </div>
           </div>
 
@@ -548,7 +549,7 @@ export default function ProfessionalForexLanding() {
               return (
                 <div
                   key={i}
-                  onClick={() => openPopup("button", `${s.n} Session`)}
+                  // onClick={() => openPopup("button", `${s.n} Session`)}
                   className={`bg-[#0D1117] border ${isActive ? 'border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.1)]' : 'border-white/5'} p-6 rounded-2xl transition-all relative overflow-hidden cursor-pointer hover:border-cyan-500/30`}
                 >
                   {isActive && (
@@ -600,7 +601,7 @@ export default function ProfessionalForexLanding() {
                 ].map((setup, i) => (
                   <div
                     key={i}
-                    onClick={() => openPopup("button", setup.t)}
+                    // onClick={() => openPopup("button", setup.t)}
                     className="bg-[#0D1117] border border-white/5 p-4 rounded-2xl group cursor-pointer hover:border-cyan-500/50 transition-all"
                   >
                     <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl aspect-video flex flex-col items-center justify-center border border-white/10 mb-4 overflow-hidden relative">
@@ -684,7 +685,7 @@ export default function ProfessionalForexLanding() {
               {getVisibleCards().map((student, idx) => (
                 <div
                   key={idx}
-                  onClick={() => openPopup("button", `Student: ${student.n}`)}
+                  // onClick={() => openPopup("button", `Student: ${student.n}`)}
                   className={`bg-[#0D1117] border rounded-3xl p-6 transition-all duration-300 hover:scale-105 hover:border-cyan-500/50 group cursor-pointer ${student.type === "constructive"
                     ? "border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.1)]"
                     : "border-white/5"
