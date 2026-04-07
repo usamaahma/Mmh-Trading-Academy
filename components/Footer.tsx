@@ -49,7 +49,7 @@ export default function Footer() {
               />
             </Link>
             <p className="text-[12px] leading-relaxed max-w-sm text-slate-500">
-              Pakistan's premier trading protocol. Empowering the next generation of institutional traders through SMC, ICT, and algorithmic analysis.
+              Pakistan's premier trading protocol. Empowering the next generation of institutional traders through SMC, MSNR, and algorithmic analysis.
             </p>
             <div className="flex flex-wrap justify-center lg:justify-start items-center gap-4">
               <div className="flex items-center gap-2 text-cyan-500 font-black text-[9px] uppercase tracking-widest bg-cyan-500/5 px-3 py-1.5 rounded-full border border-cyan-500/10">
@@ -106,7 +106,7 @@ export default function Footer() {
             <div className="relative">
               <input
                 type="email"
-                placeholder="TRADER@EMAIL.COM"
+                placeholder="USER@EMAIL.COM"
                 className="w-full bg-black border border-white/10 rounded-lg py-3 px-4 text-[10px] font-bold tracking-widest focus:outline-none focus:border-cyan-500 transition-colors text-white placeholder:text-slate-700"
               />
               <button className="absolute right-1 top-1 bottom-1 bg-cyan-500 hover:bg-white text-black px-4 rounded-md flex items-center justify-center transition-all duration-300">
@@ -118,34 +118,54 @@ export default function Footer() {
 
         {/* 🔹 MIDDLE SECTION: CONTACT DEETS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 items-center">
-          <div className="flex items-center gap-4 group cursor-pointer">
+          <a
+            href="https://wa.me/966549357534"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-4 group cursor-pointer"
+          >
             <div className="p-3 bg-cyan-500/10 rounded-lg group-hover:bg-cyan-500 transition-all duration-500">
-              <Phone className="text-cyan-500 group-hover:text-black" size={16} />
+              <FaWhatsapp className="text-cyan-500 group-hover:text-black" size={16} />
             </div>
             <div>
-              <p className="text-[8px] uppercase font-black text-slate-600 tracking-tighter">Support Line</p>
-              <p className="text-white text-xs font-black tracking-[0.1em]">+92 300 0000000</p>
+              <p className="text-[8px] uppercase font-black text-slate-600 tracking-tighter">
+                Click To Contact On Whatsapp
+              </p>
+              <p className="text-white text-xs font-black tracking-[0.1em]">
+                +966 54 935 7534
+              </p>
             </div>
-          </div>
+          </a>
 
           <div className="flex items-center gap-4 group cursor-pointer md:justify-center">
-            <div className="p-3 bg-cyan-500/10 rounded-lg group-hover:bg-cyan-500 transition-all duration-500">
-              <Mail className="text-cyan-500 group-hover:text-black" size={16} />
-            </div>
-            <div>
-              <p className="text-[8px] uppercase font-black text-slate-600 tracking-tighter">Direct Inquiry</p>
-              <p className="text-white text-xs font-black tracking-[0.1em]">support@mmhtrading.com</p>
-            </div>
+            <a
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=mmhacademy0@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-4 group cursor-pointer md:justify-center"
+            >
+              <div className="p-3 bg-cyan-500/10 rounded-lg group-hover:bg-cyan-500 transition-all duration-500">
+                <Mail className="text-cyan-500 group-hover:text-black" size={16} />
+              </div>
+              <div>
+                <p className="text-[8px] uppercase font-black text-slate-600 tracking-tighter">
+                  Direct Inquiry
+                </p>
+                <p className="text-white text-xs font-black tracking-[0.1em]">
+                  mmhacademy0@gmail.com
+                </p>
+              </div>
+            </a>
           </div>
 
           {/* SOCIALS */}
           <div className="flex items-center gap-2 md:justify-end">
             {[
               { icon: <FaTelegramPlane size={16} />, link: "#" },
-              { icon: <FaWhatsapp size={16} />, link: "#" },
-              { icon: <FaInstagram size={16} />, link: "#" },
-              { icon: <FaYoutube size={16} />, link: "#" },
-              { icon: <FaFacebookF size={14} />, link: "#" },
+              { icon: <FaWhatsapp size={16} />, link: "https://wa.me/966549357534" },
+              { icon: <FaInstagram size={16} />, link: "https://www.instagram.com/mmh_academy00?igsh=MTlldmRvZnRmam5vbA%3D%3D&utm_source=qr" },
+              { icon: <FaYoutube size={16} />, link: "https://youtube.com/@master-mind-hunters?si=Chrkxz1plY2hExbN" },
+              { icon: <FaFacebookF size={14} />, link: "https://www.facebook.com/share/1FjpMKbrpV/?mibextid=wwXIfr" },
             ].map((social, i) => (
               <a
                 key={i}
@@ -161,14 +181,15 @@ export default function Footer() {
         {/* 🔹 BOTTOM SECTION: FOOTNOTE */}
         <div className="pt-8 border-t border-white/5 text-[9px] text-slate-600 uppercase font-bold tracking-[0.2em] flex flex-col md:flex-row justify-between items-center gap-6">
           <p>© {currentYear} MMH Protocol. All Systems Operational.</p>
+          <p className="max-w-[400px] text-center md:text-center leading-loose  ">
+              Risk Warning: Trading involves significant financial exposure. Execution requires precision.
+            </p>
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1.5 text-cyan-500/40 hover:text-cyan-500 transition-colors">
               <TrendingUp size={12} /> Elite Performance
             </span>
             <span className="hidden md:inline text-white/5">|</span>
-            <p className="max-w-[400px] text-center md:text-right leading-loose opacity-50 italic">
-              Risk Warning: Trading involves significant financial exposure. Execution requires precision.
-            </p>
+            
           </div>
         </div>
       </div>
