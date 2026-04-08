@@ -177,10 +177,10 @@ export default function CourseDetailPage() {
                     </div>
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-[0.1em] text-white leading-none mb-1">
-                        Watch Video
+                        Watch Youtube Video
                       </p>
                       <p className="text-[7px] font-bold text-slate-600 uppercase">
-                        HD Stream Server
+                        Youtube Video
                       </p>
                     </div>
                   </a>
@@ -198,10 +198,10 @@ export default function CourseDetailPage() {
                     </div>
                     <div>
                       <p className="text-[9px] font-black uppercase tracking-[0.1em] text-white leading-none mb-1">
-                        Get Resources
+                        Watch video
                       </p>
                       <p className="text-[7px] font-bold text-slate-600 uppercase">
-                        Mega Storage
+                        Video Link
                       </p>
                     </div>
                   </a>
