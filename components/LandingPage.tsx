@@ -806,9 +806,9 @@ export default function ProfessionalForexLanding() {
                   </div>
                 ))}
                 {(!landingData?.highImpactNews || landingData.highImpactNews.length === 0) && (
-                  <div className="flex justify-between items-center text-[9px] font-black text-slate-500 uppercase">
-                    <span>FOMC Meeting</span>
-                    <span className="text-white">Wed 14:00</span>
+                  <div key={i} className="flex flex-col justify-between text-[12px] font-black text-slate-500 uppercase">
+                    <span>{news.newsTitle}</span><br />
+                    <span className="text-white text-right" >{news.newsTime}</span>
                   </div>
                 )}
               </div>
