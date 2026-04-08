@@ -799,10 +799,10 @@ export default function ProfessionalForexLanding() {
                   <AlertCircle size={14} /> High Impact News
                 </h4>
                 {/* Dynamic news items */}
-                {landingData?.highImpactNews?.map((news, i) => (
-                  <div key={i} className="flex justify-between items-center text-[9px] font-black text-slate-500 uppercase">
-                    <span>{news.newsTitle}</span>
-                    <span className="text-white">{news.newsTime}</span>
+                 {landingData?.highImpactNews?.map((news, i) => (
+                  <div key={i} className="flex flex-col justify-between text-[12px] font-black text-slate-500 uppercase">
+                    <span>{news.newsTitle}</span><br />
+                    <span className="text-white text-right" >{news.newsTime}</span>
                   </div>
                 ))}
                 {(!landingData?.highImpactNews || landingData.highImpactNews.length === 0) && (
