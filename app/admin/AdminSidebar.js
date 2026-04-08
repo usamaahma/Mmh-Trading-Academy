@@ -11,11 +11,13 @@ import {
   Briefcase,
   Inbox,
   User,
+  Home,
 } from "lucide-react";
 
 export default function AdminSidebar({ activeTab, setActiveTab }) {
   const menuItems = [
-    { id: "dashboard", label: "Overview", icon: <LayoutDashboard size={18} /> },
+    { id: "dashboard", label: "Overview", icon: <Home size={18} /> },
+    { id: "landing", label: "Landing", icon: <User size={18} /> },
     { id: "users", label: "Users", icon: <User size={18} /> },
     { id: "signals", label: "Active Signals", icon: <Zap size={18} /> },
     { id: "analysis", label: "Market Analysis", icon: <BarChart3 size={18} /> },

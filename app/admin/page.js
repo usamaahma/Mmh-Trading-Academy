@@ -9,6 +9,7 @@ import AdminContactPanel from "./contactus";
 import ResultsManager from "./results";
 import UserManager from "./UserManager";
 import AdminLeadPanel from "./leads";
+import LandingManager from "./Landing";
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("signals");
@@ -50,6 +51,8 @@ export default function AdminPage() {
           {activeTab === "results" && <ResultsManager />}
           {activeTab === "users" && <UserManager />}
           {activeTab === "leads" && <AdminLeadPanel />}
+          {activeTab === "landing" && <LandingManager />}
+
         </div>
       </main>
     </div>
