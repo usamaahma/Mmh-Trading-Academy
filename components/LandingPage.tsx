@@ -37,11 +37,45 @@ import {
 import PopupForm from "@/components/leads";
 import Link from "next/link";
 
+// Types for API data
+interface AnalysisItem {
+  landingChart?: string;
+  pair: string;
+  profit: string;
+  reason: string;
+  _id?: string;
+}
+
+interface WatchlistItem {
+  pairName: string;
+  entryPrice: string;
+  shortDesc: string;
+  _id?: string;
+}
+
+interface NewsItem {
+  newsTitle: string;
+  newsTime: string;
+  _id?: string;
+}
+
+interface LandingData {
+  _id?: string;
+  pnl: string;
+  analysisSection: AnalysisItem[];
+  watchlist: WatchlistItem[];
+  highImpactNews: NewsItem[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export default function ProfessionalForexLanding() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [landingData, setLandingData] = useState<LandingData | null>(null);
 
   // SECTION 7: Risk Calculator State
   const [balance, setBalance] = useState<number>(10000);
@@ -65,6 +99,51 @@ export default function ProfessionalForexLanding() {
     setIsPopupOpen(true);
   };
 
+  // FETCH LANDING PAGE DATA
+  const fetchLandingData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/landing');
+      if (response.ok) {
+        const data = await response.json();
+
+        setLandingData(data.data);
+        console.log(data, "landingdata")
+      } else {
+        console.error('Failed to fetch landing data');
+      }
+    } catch (error) {
+      console.error('Error fetching landing data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // SAVE LANDING PAGE DATA
+  const saveLandingData = async (data: Partial<LandingData>) => {
+    try {
+      const response = await fetch('/api/landing', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        const updatedData = await response.json();
+        setLandingData(updatedData);
+        return updatedData;
+      } else {
+        console.error('Failed to save landing data');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error saving landing data:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
@@ -73,6 +152,7 @@ export default function ProfessionalForexLanding() {
   useEffect(() => {
     setIsMounted(true);
     calculateRisk();
+    fetchLandingData();
   }, [balance, riskPercent, stopLoss]);
 
   const calculateRisk = () => {
@@ -130,7 +210,7 @@ export default function ProfessionalForexLanding() {
     { n: "New York", i: <Zap size={24} />, p: "XAUUSD, NAS100", v: "100-750 Pips", start: 13, end: 22, h: "13:00 - 22:00" },
   ];
 
-  // STUDENT FEEDBACK DATA
+  // STUDENT FEEDBACK DATA (static)
   const studentFeedback = [
     { n: "Abdullah R.", l: "Karachi, PK", p: "+$3,400", c: "MMH SMC Mastery", pr: 92, fb: "Finally someone who teaches real SMC! The MMH course completely changed my approach. No more guessing, just pure liquidity concepts.", stars: 5, type: "success" },
     { n: "Hira K.", l: "Lahore, PK", p: "+$5,200", c: "MSNR Framework", pr: 78, fb: "MSNR is a game changer. Entry clarity has improved 10x. Still learning but already profitable after 2 months.", stars: 5, type: "success" },
@@ -177,6 +257,17 @@ export default function ProfessionalForexLanding() {
     },
   ];
 
+  if (isLoading) {
+    return (
+      <main className={`${poppinsClass} min-h-screen bg-[#010409] text-slate-400 flex items-center justify-center`}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500 mx-auto mb-4"></div>
+          <p className="text-cyan-400 text-sm uppercase tracking-wider">Loading Market Data...</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className={`${poppinsClass} min-h-screen bg-[#010409] text-slate-400 selection:bg-cyan-500/30 overflow-x-hidden`}>
 
@@ -201,7 +292,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </div>
 
-      {/* HERO SECTION */}
+      {/* HERO SECTION - Using dynamic PNL from API */}
       <section className="relative pt-32 md:pt-44 pb-16 px-4 md:px-8">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,_rgba(34,211,238,0.08)_0%,_transparent_50%)]"></div>
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 items-center">
@@ -252,7 +343,7 @@ export default function ProfessionalForexLanding() {
             <div className="space-y-4">
               <div className="flex justify-between items-end">
                 <p className="text-2xl font-bold text-white tracking-tighter">
-                  +$14,280.44
+                  ${landingData?.pnl || "0"}
                 </p>
                 <p className="text-[10px] text-green-500 font-bold uppercase tracking-widest">
                   Running Profit
@@ -262,22 +353,39 @@ export default function ProfessionalForexLanding() {
                 <div className="h-full bg-cyan-500 w-[78%] animate-pulse"></div>
               </div>
               <div className="grid grid-cols-3 gap-2">
-                {["XAU", "NAS", "BTC"].map((p) => (
+                {/* Dynamic analysis section pairs */}
+                {landingData?.analysisSection?.slice(0, 3).map((item, idx) => (
                   <div
-                    key={p}
+                    key={idx}
                     className="p-2 bg-black/40 border border-white/5 rounded text-center"
                   >
-                    <p className="text-[8px] text-slate-500 uppercase">{p}</p>
-                    <p className="text-[10px] font-bold text-white">+2.1%</p>
+                    <p className="text-[8px] text-slate-500 uppercase">{item.pair}</p>
+                    <p className="text-[10px] font-bold text-white">+${item.profit}</p>
                   </div>
                 ))}
+                {(!landingData?.analysisSection || landingData.analysisSection.length === 0) && (
+                  <>
+                    <div className="p-2 bg-black/40 border border-white/5 rounded text-center">
+                      <p className="text-[8px] text-slate-500 uppercase">XAU</p>
+                      <p className="text-[10px] font-bold text-white">+2.1%</p>
+                    </div>
+                    <div className="p-2 bg-black/40 border border-white/5 rounded text-center">
+                      <p className="text-[8px] text-slate-500 uppercase">NAS</p>
+                      <p className="text-[10px] font-bold text-white">+2.1%</p>
+                    </div>
+                    <div className="p-2 bg-black/40 border border-white/5 rounded text-center">
+                      <p className="text-[8px] text-slate-500 uppercase">BTC</p>
+                      <p className="text-[10px] font-bold text-white">+2.1%</p>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* METHODOLOGY SECTION - Adding popup to these cards too */}
+      {/* METHODOLOGY SECTION */}
       <section className="py-16 bg-black/20">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
@@ -424,7 +532,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* ASSET SPECIALIZATION - Adding popup to cards */}
+      {/* ASSET SPECIALIZATION */}
       <section className="py-16 px-4 border-y border-white/5">
         <div className="max-w-7xl mx-auto">
           <h2 className={`${playfairClass} text-3xl text-white uppercase italic mb-10`}>
@@ -474,7 +582,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* COURSE CAROUSEL - ALL course cards and view details buttons */}
+      {/* COURSE CAROUSEL */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="mb-10 text-center">
@@ -535,7 +643,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* FOREX MARKET HOURS & SESSION MATRIX - Adding popup to session cards */}
+      {/* FOREX MARKET HOURS & SESSION MATRIX */}
       <section className="py-20 px-4 bg-[#05080f]">
         <div className="max-w-7xl mx-auto">
           <h2 className={`${playfairClass} text-3xl text-white uppercase italic mb-10`}>
@@ -549,7 +657,6 @@ export default function ProfessionalForexLanding() {
               return (
                 <div
                   key={i}
-                  // onClick={() => openPopup("button", `${s.n} Session`)}
                   className={`bg-[#0D1117] border ${isActive ? 'border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.1)]' : 'border-white/5'} p-6 rounded-2xl transition-all relative overflow-hidden cursor-pointer hover:border-cyan-500/30`}
                 >
                   {isActive && (
@@ -585,7 +692,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* WEEKLY MARKET RECAP & WATCHLIST - Adding popup to setup cards */}
+      {/* WEEKLY MARKET RECAP & WATCHLIST - Using API data */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className={`${playfairClass} text-3xl text-white uppercase italic mb-10`}>
@@ -594,49 +701,95 @@ export default function ProfessionalForexLanding() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-8 space-y-8">
               <h3 className="text-[12px] font-black uppercase text-slate-500 tracking-[0.2em]">Last Week's Top Setups</h3>
-              <div className="grid md:grid-cols-2 gap-6">
-                {[
-                  { t: "XAUUSD Sell-off", p: "+140 Pips", d: "Liquidity grab at NY Open." },
-                  { t: "NAS100 Displacement", p: "+220 Pips", d: "Internal range expansion." }
-                ].map((setup, i) => (
+              <Link href="/results"><div className="grid md:grid-cols-2 gap-6">
+                {/* Dynamic analysis section setups */}
+                {landingData?.analysisSection?.map((setup, i) => (
                   <div
                     key={i}
-                    // onClick={() => openPopup("button", setup.t)}
                     className="bg-[#0D1117] border border-white/5 p-4 rounded-2xl group cursor-pointer hover:border-cyan-500/50 transition-all"
                   >
-                    <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl aspect-video flex flex-col items-center justify-center border border-white/10 mb-4 overflow-hidden relative">
-                      <Camera className="text-slate-600 mb-2 group-hover:scale-110 transition-transform" size={32} />
-                      <span className="text-[10px] text-slate-500 uppercase font-black">Chart Preview</span>
-                      <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    </div>
+                    {setup.landingChart ? (
+                      <img
+                        src={setup.landingChart}
+                        alt={setup.pair}
+                        className="w-full h-32 object-cover rounded-xl mb-4 bg-gradient-to-br from-gray-800 to-gray-900"
+                      />
+                    ) : (
+                      <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl aspect-video flex flex-col items-center justify-center border border-white/10 mb-4 overflow-hidden relative">
+                        <Camera className="text-slate-600 mb-2 group-hover:scale-110 transition-transform" size={32} />
+                        <span className="text-[10px] text-slate-500 uppercase font-black">Chart Preview</span>
+                        <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      </div>
+                    )}
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-black text-white uppercase">{setup.t}</span>
-                      <span className="text-[10px] font-black text-green-500">{setup.p}</span>
+                      <span className="text-sm font-black text-white uppercase">{setup.pair}</span>
+                      <span className="text-[10px] font-black text-green-500">+${setup.profit}</span>
                     </div>
-                    <p className="text-[10px] text-slate-500 uppercase leading-relaxed font-bold">{setup.d}</p>
+                    <p className="text-[10px] text-slate-500 uppercase leading-relaxed font-bold">{setup.reason}</p>
                   </div>
                 ))}
-              </div>
+                {(!landingData?.analysisSection || landingData.analysisSection.length === 0) && (
+                  <>
+                    <div className="bg-[#0D1117] border border-white/5 p-4 rounded-2xl">
+                      <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl aspect-video flex items-center justify-center mb-4">
+                        <Camera className="text-slate-600" size={32} />
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-black text-white uppercase">XAUUSD Sell-off</span>
+                        <span className="text-[10px] font-black text-green-500">+140 Pips</span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 uppercase">Liquidity grab at NY Open.</p>
+                    </div>
+                    <div className="bg-[#0D1117] border border-white/5 p-4 rounded-2xl">
+                      <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl aspect-video flex items-center justify-center mb-4">
+                        <Camera className="text-slate-600" size={32} />
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-black text-white uppercase">NAS100 Displacement</span>
+                        <span className="text-[10px] font-black text-green-500">+220 Pips</span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 uppercase">Internal range expansion.</p>
+                    </div>
+                  </>
+                )}
+              </div></Link>
+
             </div>
 
             <div className="lg:col-span-4 bg-[#0D1117] border border-white/5 p-8 rounded-2xl flex flex-col">
               <h3 className="text-[12px] font-black uppercase text-slate-500 tracking-[0.2em] mb-8">This Week's Watchlist</h3>
               <div className="space-y-6 flex-grow">
-                {[
-                  { p: "EURUSD", l: "1.0820 Support", s: "Wait for mSS" },
-                  { p: "BTCUSD", l: "68,500 FVG", s: "Looking for bounce" },
-                  { p: "AAPL", l: "172.50 Gap", s: "Institutional Rebalance" }
-                ].map((item, i) => (
+                {/* Dynamic watchlist items */}
+                {landingData?.watchlist?.map((item, i) => (
                   <div
                     key={i}
-                    onClick={() => openPopup("button", item.p)}
+                    onClick={() => openPopup("button", item.pairName)}
                     className="group border-l-2 border-cyan-500/20 pl-4 hover:border-cyan-500 transition-colors cursor-pointer"
                   >
-                    <p className="text-xs font-black text-white uppercase mb-1">{item.p}</p>
-                    <p className="text-[9px] text-cyan-400 font-bold uppercase tracking-widest">{item.l}</p>
-                    <p className="text-[9px] text-slate-600 uppercase font-bold italic mt-1">{item.s}</p>
+                    <p className="text-xs font-black text-white uppercase mb-1">{item.pairName}</p>
+                    <p className="text-[9px] text-cyan-400 font-bold uppercase tracking-widest">{item.entryPrice}</p>
+                    <p className="text-[9px] text-slate-600 uppercase font-bold italic mt-1">{item.shortDesc}</p>
                   </div>
                 ))}
+                {(!landingData?.watchlist || landingData.watchlist.length === 0) && (
+                  <>
+                    <div className="group border-l-2 border-cyan-500/20 pl-4">
+                      <p className="text-xs font-black text-white uppercase mb-1">EURUSD</p>
+                      <p className="text-[9px] text-cyan-400 font-bold uppercase">1.0820 Support</p>
+                      <p className="text-[9px] text-slate-600 uppercase italic">Wait for mSS</p>
+                    </div>
+                    <div className="group border-l-2 border-cyan-500/20 pl-4">
+                      <p className="text-xs font-black text-white uppercase mb-1">BTCUSD</p>
+                      <p className="text-[9px] text-cyan-400 font-bold uppercase">68,500 FVG</p>
+                      <p className="text-[9px] text-slate-600 uppercase italic">Looking for bounce</p>
+                    </div>
+                    <div className="group border-l-2 border-cyan-500/20 pl-4">
+                      <p className="text-xs font-black text-white uppercase mb-1">AAPL</p>
+                      <p className="text-[9px] text-cyan-400 font-bold uppercase">172.50 Gap</p>
+                      <p className="text-[9px] text-slate-600 uppercase italic">Institutional Rebalance</p>
+                    </div>
+                  </>
+                )}
               </div>
               <div className="mt-12 pt-8 border-t border-white/5 space-y-4">
                 <h4
@@ -645,17 +798,26 @@ export default function ProfessionalForexLanding() {
                 >
                   <AlertCircle size={14} /> High Impact News
                 </h4>
-                <div className="flex justify-between items-center text-[9px] font-black text-slate-500 uppercase">
-                  <span>FOMC Meeting</span>
-                  <span className="text-white">Wed 14:00</span>
-                </div>
+                {/* Dynamic news items */}
+                {landingData?.highImpactNews?.map((news, i) => (
+                  <div key={i} className="flex justify-between items-center text-[9px] font-black text-slate-500 uppercase">
+                    <span>{news.newsTitle}</span>
+                    <span className="text-white">{news.newsTime}</span>
+                  </div>
+                ))}
+                {(!landingData?.highImpactNews || landingData.highImpactNews.length === 0) && (
+                  <div className="flex justify-between items-center text-[9px] font-black text-slate-500 uppercase">
+                    <span>FOMC Meeting</span>
+                    <span className="text-white">Wed 14:00</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* STUDENT SUCCESS TRACKER - Adding popup to feedback cards */}
+      {/* STUDENT SUCCESS TRACKER */}
       <section className="py-20 px-4 bg-[#05080f] relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -685,7 +847,6 @@ export default function ProfessionalForexLanding() {
               {getVisibleCards().map((student, idx) => (
                 <div
                   key={idx}
-                  // onClick={() => openPopup("button", `Student: ${student.n}`)}
                   className={`bg-[#0D1117] border rounded-3xl p-6 transition-all duration-300 hover:scale-105 hover:border-cyan-500/50 group cursor-pointer ${student.type === "constructive"
                     ? "border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.1)]"
                     : "border-white/5"
@@ -791,7 +952,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* BROKER & TOOL INTEGRATION - Adding popup to all tools */}
+      {/* BROKER & TOOL INTEGRATION */}
       <section className="py-20 px-4 border-y border-white/5">
         <div className="max-w-7xl mx-auto">
           <h2 className={`${playfairClass} text-3xl text-white uppercase italic mb-10 text-center md:text-center`}>
@@ -808,7 +969,7 @@ export default function ProfessionalForexLanding() {
             ].map((tool, i) => (
               <Link
                 key={i}
-                href={`/brokers`} // Link to courses page with query
+                href={`/brokers`}
                 className="no-underline"
               >
                 <div
