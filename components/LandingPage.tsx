@@ -108,7 +108,7 @@ export default function ProfessionalForexLanding() {
         const data = await response.json();
 
         setLandingData(data.data);
-        console.log(data, "landingdata")
+        console.log(data,"landingdata")
       } else {
         console.error('Failed to fetch landing data');
       }
@@ -701,7 +701,7 @@ export default function ProfessionalForexLanding() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-8 space-y-8">
               <h3 className="text-[12px] font-black uppercase text-slate-500 tracking-[0.2em]">Last Week's Top Setups</h3>
-              <Link href="/results"><div className="grid md:grid-cols-2 gap-6">
+             <Link href="/results"><div className="grid md:grid-cols-2 gap-6">
                 {/* Dynamic analysis section setups */}
                 {landingData?.analysisSection?.map((setup, i) => (
                   <div
@@ -753,7 +753,7 @@ export default function ProfessionalForexLanding() {
                   </>
                 )}
               </div></Link>
-
+              
             </div>
 
             <div className="lg:col-span-4 bg-[#0D1117] border border-white/5 p-8 rounded-2xl flex flex-col">
@@ -800,7 +800,7 @@ export default function ProfessionalForexLanding() {
                 </h4>
                 {/* Dynamic news items */}
                 {landingData?.highImpactNews?.map((news, i) => (
-                  <div key={i} className="flex justify-between items-center text-[9px] font-black text-slate-500 uppercase">
+                  <div key={i} className="flex justify-between items-center text-[12px] font-black text-slate-500 uppercase">
                     <span>{news.newsTitle}</span>
                     <span className="text-white">{news.newsTime}</span>
                   </div>
