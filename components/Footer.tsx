@@ -3,12 +3,11 @@
 import React from "react";
 import {
   Mail,
-  Phone,
   ArrowRight,
   ShieldCheck,
   TrendingUp,
   Globe,
-  Send,
+  Quote,
 } from "lucide-react";
 import {
   FaWhatsapp,
@@ -23,7 +22,7 @@ import Image from "next/image";
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const footerLinks = [
-    { name: "Risk Disclosure", slug: "/risk-disclosure" },
+    { name: "Risk Disclosure", slug: "/risk" },
     { name: "Privacy Policy", slug: "/privacy-policy" },
     { name: "Terms of Service", slug: "/terms" },
     { name: "Contact Us", slug: "/contact-us" },
@@ -33,10 +32,10 @@ export default function Footer() {
     <footer className="bg-[#010409] text-slate-400 border-t border-cyan-500/10 pt-16 pb-8 font-sans">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
 
-        {/* 🔹 TOP SECTION: BRAND & NEWSLETTER */}
+        {/* 🔹 TOP SECTION: BRAND, LINKS & CEO MESSAGE */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16 border-b border-white/5 pb-16">
 
-          {/* LOGO & DESCRIPTION (Centered) */}
+          {/* LOGO & DESCRIPTION */}
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-6">
             <Link href="/" className="flex items-center shrink-0">
               <Image
@@ -68,10 +67,18 @@ export default function Footer() {
                 Navigation
               </h4>
               <ul className="space-y-3 text-[11px] font-bold uppercase tracking-wider">
-                {["Signals", "Brokers", "Courses", "Analysis"].map((item) => (
-                  <li key={item} className="hover:text-cyan-400 cursor-pointer transition-all flex items-center gap-2 group">
-                    <ArrowRight size={10} className="text-cyan-500 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                    {item}
+                {["Brokers", "Courses", "Analysis"].map((item) => (
+                  <li key={item}>
+                    <Link
+                      href={`/${item.toLowerCase()}`}
+                      className="hover:text-cyan-400 cursor-pointer transition-all flex items-center gap-2 group"
+                    >
+                      <ArrowRight
+                        size={10}
+                        className="text-cyan-500 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all"
+                      />
+                      {item}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -95,23 +102,48 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* NEWSLETTER */}
-          <div className="space-y-6 bg-white/5 p-6 rounded-2xl border border-white/5">
-            <div className="space-y-2">
-              <h4 className="text-white font-black uppercase tracking-[0.2em] text-[10px]">
-                Institutional Updates
-              </h4>
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest">Join our private distribution list.</p>
+          {/* 🔹 CEO MESSAGE SECTION (EXTRA LARGE IMAGE & HOVER GRAY) */}
+          <div className="relative group bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-10 overflow-visible flex flex-col items-center shadow-inner mt-20 lg:mt-0">
+            {/* LARGE Background Quote Icon */}
+            <div className="absolute top-6 right-6 p-4 opacity-5 group-hover:opacity-10 transition-opacity z-0">
+              <Quote size={100} className="text-cyan-500" />
             </div>
-            <div className="relative">
-              <input
-                type="email"
-                placeholder="USER@EMAIL.COM"
-                className="w-full bg-black border border-white/10 rounded-lg py-3 px-4 text-[10px] font-bold tracking-widest focus:outline-none focus:border-cyan-500 transition-colors text-white placeholder:text-slate-700"
-              />
-              <button className="absolute right-1 top-1 bottom-1 bg-cyan-500 hover:bg-white text-black px-4 rounded-md flex items-center justify-center transition-all duration-300">
-                <Send size={14} />
-              </button>
+
+            <div className="flex flex-col items-center space-y-8 z-10">
+
+              {/* EXTRA LARGE Direct Image Container */}
+              <div className="relative w-56 h-56 -mt-36 group-hover:-mt-40 transition-all duration-500 flex items-center justify-center">
+                {/* Neon Glow Blur */}
+                <div className="absolute inset-0 bg-cyan-500/20 blur-[40px] opacity-50 group-hover:opacity-100 transition-all" />
+
+                {/* PNG Image: Default Colorful -> Hover Grayish */}
+                <div className="relative w-full h-full drop-shadow-[0_35px_35px_rgba(0,0,0,0.8)] transition-all duration-500">
+                  <Image
+                    src="/author.png"
+                    alt="CEO MMH"
+                    fill
+                    className="object-contain grayscale-0 group-hover:grayscale transition-all duration-700 ease-in-out scale-110 group-hover:scale-105"
+                  />
+                </div>
+              </div>
+
+              {/* CEO Text Details */}
+              <div className="text-center">
+                {/* <p className="text-cyan-500 font-black text-[10px] uppercase tracking-[0.5em] mb-1">
+                  Founding Protocol
+                </p> */}
+                <h4 className="text-white font-black uppercase italic tracking-tighter text-[28px] md:text-[28px] leading-none mb-3">
+                  CEO <span className="text-cyan-400">MESSAGE</span>
+                </h4>
+                <p className="text-[11px] md:text-[11px] leading-[1.8] text-slate-200 italic max-w-sm text-center font-bold uppercase tracking-widest">
+                  "Trading is not about being right, it's about being disciplined. Our mission is to transform retail mindsets into institutional powerhouses."
+                </p>
+              </div>
+
+              {/* The Quote */}
+
+
+              <div className="h-[2px] w-32 bg-gradient-to-r from-transparent via-cyan-500 to-transparent group-hover:w-full transition-all duration-1000" />
             </div>
           </div>
         </div>
@@ -181,7 +213,7 @@ export default function Footer() {
         {/* 🔹 BOTTOM SECTION: FOOTNOTE */}
         <div className="pt-8 border-t border-white/5 text-[9px] text-slate-600 uppercase font-bold tracking-[0.2em] flex flex-col md:flex-row justify-between items-center gap-6">
           <p>© {currentYear} MMH Protocol. All Rights Reserved.</p>
-          <p className="max-w-[400px] text-center md:text-center leading-loose  ">
+          <p className="max-w-[400px] text-center md:text-center leading-loose">
             Risk Warning: Trading involves significant financial exposure. Execution requires precision.
           </p>
           <div className="flex items-center gap-6">
@@ -189,7 +221,6 @@ export default function Footer() {
               <TrendingUp size={12} /> Elite Performance
             </span>
             <span className="hidden md:inline text-white/5">|</span>
-
           </div>
         </div>
       </div>

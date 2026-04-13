@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { playfair, poppins } from "@/lib/fonts";
 import {
   ArrowRight,
@@ -99,16 +99,15 @@ export default function ProfessionalForexLanding() {
     setIsPopupOpen(true);
   };
 
-  // FETCH LANDING PAGE DATA
-  const fetchLandingData = async () => {
+  // FETCH LANDING PAGE DATA - Using useCallback
+  const fetchLandingData = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch('/api/landing');
       if (response.ok) {
         const data = await response.json();
-
         setLandingData(data.data);
-        console.log(data,"landingdata")
+        console.log(data, "landingdata");
       } else {
         console.error('Failed to fetch landing data');
       }
@@ -117,10 +116,10 @@ export default function ProfessionalForexLanding() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   // SAVE LANDING PAGE DATA
-  const saveLandingData = async (data: Partial<LandingData>) => {
+  const saveLandingData = useCallback(async (data: Partial<LandingData>) => {
     try {
       const response = await fetch('/api/landing', {
         method: 'POST',
@@ -142,25 +141,36 @@ export default function ProfessionalForexLanding() {
       console.error('Error saving landing data:', error);
       return null;
     }
-  };
+  }, []);
 
+  // Calculate risk - Using useCallback
+  const calculateRisk = useCallback(() => {
+    const amount = (balance * riskPercent) / 100;
+    const size = amount / (stopLoss * 10);
+    setRiskAmount(amount);
+    setPositionSize(Number(size.toFixed(2)));
+  }, [balance, riskPercent, stopLoss]);
+
+  // Separate useEffect for time updates
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
 
+  // Separate useEffect for mounting
   useEffect(() => {
     setIsMounted(true);
-    calculateRisk();
-    fetchLandingData();
-  }, [balance, riskPercent, stopLoss]);
+  }, []);
 
-  const calculateRisk = () => {
-    const amount = (balance * riskPercent) / 100;
-    const size = amount / (stopLoss * 10);
-    setRiskAmount(amount);
-    setPositionSize(Number(size.toFixed(2)));
-  };
+  // Separate useEffect for initial data fetch - runs only once
+  useEffect(() => {
+    fetchLandingData();
+  }, [fetchLandingData]);
+
+  // Separate useEffect for risk calculation - only runs when inputs change
+  useEffect(() => {
+    calculateRisk();
+  }, [calculateRisk]);
 
   const slide = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -174,13 +184,13 @@ export default function ProfessionalForexLanding() {
   };
 
   // Carousel navigation
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     setActiveSlide((prev) => (prev + 1) % studentFeedback.length);
-  };
+  }, []);
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     setActiveSlide((prev) => (prev - 1 + studentFeedback.length) % studentFeedback.length);
-  };
+  }, []);
 
   // Auto carousel movement
   useEffect(() => {
@@ -189,7 +199,7 @@ export default function ProfessionalForexLanding() {
       nextSlide();
     }, 5000);
     return () => clearInterval(interval);
-  }, [isMounted, activeSlide]);
+  }, [isMounted, nextSlide]);
 
   const playfairClass = playfair?.className || "serif";
   const poppinsClass = poppins?.className || "sans-serif";
@@ -437,7 +447,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* RISK MANAGEMENT CALCULATOR */}
+      {/* RISK MANAGEMENT CALCULATOR - FIXED */}
       <section className="py-12 md:py-20 px-4 bg-[#010409]">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
@@ -452,7 +462,7 @@ export default function ProfessionalForexLanding() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto lg:mx-0">
               <div className="p-5 bg-[#0D1117] border border-white/5 rounded-2xl shadow-xl">
                 <p className="text-[9px] text-slate-600 uppercase font-black mb-2 tracking-widest">Risk Amount</p>
-                <p className="text-xl md:text-2xl font-black text-white">${riskAmount}</p>
+                <p className="text-xl md:text-2xl font-black text-white">${riskAmount.toFixed(2)}</p>
               </div>
               <div className="p-5 bg-[#0D1117] border border-cyan-500/20 rounded-2xl shadow-xl shadow-cyan-500/5">
                 <p className="text-[9px] text-cyan-500 uppercase font-black mb-2 tracking-widest">Recommended Lots</p>
@@ -469,7 +479,7 @@ export default function ProfessionalForexLanding() {
                   <input
                     type="number"
                     value={balance}
-                    onChange={(e) => setBalance(Number(e.target.value))}
+                    onChange={(e) => setBalance(Number(e.target.value) || 0)}
                     className="w-full bg-[#05080f] border border-white/10 rounded-xl md:rounded-2xl p-4 text-white font-bold outline-none focus:border-cyan-500/50 transition-colors text-sm"
                     placeholder="e.g. 10000"
                   />
@@ -489,6 +499,14 @@ export default function ProfessionalForexLanding() {
                     onChange={(e) => setRiskPercent(Number(e.target.value))}
                     className="w-full accent-cyan-500 h-1.5 bg-white/5 rounded-full appearance-none cursor-pointer"
                   />
+                  <div className="flex justify-between text-[8px] text-slate-600 px-1">
+                    <span>0.25%</span>
+                    <span>1%</span>
+                    <span>2%</span>
+                    <span>3%</span>
+                    <span>4%</span>
+                    <span>5%</span>
+                  </div>
                 </div>
               </div>
 
@@ -499,28 +517,28 @@ export default function ProfessionalForexLanding() {
                     <button
                       onClick={() => setStopLoss(s => Math.max(1, s - 5))}
                       className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 active:scale-95 transition-all"
+                      type="button"
                     >
                       <Minus size={16} />
                     </button>
                     <input
                       type="number"
                       value={stopLoss}
-                      onChange={(e) => setStopLoss(Number(e.target.value))}
+                      onChange={(e) => setStopLoss(Math.max(1, Number(e.target.value) || 1))}
                       className="flex-grow min-w-[60px] bg-[#05080f] border border-white/10 rounded-xl md:rounded-2xl p-3 text-white font-bold text-center outline-none focus:border-cyan-500/50 transition-colors text-sm"
                     />
                     <button
                       onClick={() => setStopLoss(s => s + 5)}
                       className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 active:scale-95 transition-all"
+                      type="button"
                     >
                       <Plus size={16} />
                     </button>
                   </div>
                 </div>
 
-                <div
-                  onClick={() => openPopup("cta")}
-                  className="p-4 md:p-6 bg-cyan-500/5 border border-cyan-500/10 rounded-2xl flex items-start sm:items-center gap-4 cursor-pointer hover:bg-cyan-500/10 transition-all"
-                >
+                {/* Fixed info panel - removed onClick that was causing jump */}
+                <div className="p-4 md:p-6 bg-cyan-500/5 border border-cyan-500/10 rounded-2xl flex items-start sm:items-center gap-4">
                   <Calculator size={24} className="text-cyan-500 opacity-40 flex-shrink-0" />
                   <p className="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase leading-tight italic">
                     Position size calculated for 1:100 leverage standard forex accounts.
