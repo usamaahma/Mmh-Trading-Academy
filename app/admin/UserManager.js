@@ -45,24 +45,26 @@ export default function UserManager() {
   };
 
   // --- DELETE USER LOGIC ---
-  const handleDelete = async (userId, userName) => {
+ const handleDelete = async (userId, userName) => {
     if (!confirm(`Are you sure you want to delete ${userName}? This cannot be undone.`)) return;
 
     try {
-      const res = await fetch("/api/admin/delete-user", {
+      // Backend expects ID in URL query: ?id=XYZ
+      const res = await fetch(`/api/admin/delete-user?id=${userId}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: userId }),
       });
 
-      if (res.ok) {
+      const data = await res.json();
+
+      if (res.ok && data.success) {
         alert("User deleted successfully.");
         fetchData(); // Refresh list
       } else {
-        alert("Failed to delete user.");
+        alert(`Error: ${data.error || "Failed to delete user"}`);
       }
     } catch (error) {
       console.error("Delete error:", error);
+      alert("System error occurred while deleting.");
     }
   };
 
