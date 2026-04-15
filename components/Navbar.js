@@ -49,7 +49,7 @@ export default function Navbar() {
   const handleCourseClick = (e, courseId, courseName) => {
     if (status === "unauthenticated") {
       e.preventDefault();
-      alert("Please login first to view course details.");
+      alert("Please login / Enroll first to view course details.");
       window.location.href = "/login";
       return;
     }
