@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react"; // 👈 Auth hooks
+import { useSession, signOut } from "next-auth/react";
 import {
   Phone,
   Mail,
@@ -15,36 +15,42 @@ import {
   X,
   LogOut,
   User as UserIcon,
+  Lock,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import Image from "next/image";
 
 export default function Navbar() {
-  const { data: session, status } = useSession(); // 👈 Session data
+  const { data: session, status } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [courses, setCourses] = useState([]);
 
+  // 1. Fetch Courses (Guest and User friendly)
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const res = await fetch("/api/course");
         const json = await res.json();
-        if (json.success) setCourses(json.data);
+        if (json.success) {
+          setCourses(json.data);
+        }
       } catch (err) {
         console.error("Navbar courses fetch error:", err);
       }
     };
     fetchCourses();
-  }, []);
+  }, [status]); // Status change par refresh taake access sahi show ho
 
+  // 2. Scroll Effect
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // 3. Prevent Scroll when Mobile Menu Open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -88,7 +94,7 @@ export default function Navbar() {
 
   return (
     <div className="fixed top-0 left-0 w-full z-[100]">
-      {/* Top Banner */}
+      {/* --- TOP PROMO BANNER --- */}
       <div className="bg-cyan-500 py-1.5 px-4 shadow-lg relative z-[110]">
         <div className="flex items-center justify-center gap-3 text-black text-center font-black uppercase tracking-[0.2em] text-[9px] md:text-[10px]">
           <Gift size={14} className="animate-bounce" />
@@ -105,15 +111,17 @@ export default function Navbar() {
             <Image
               src="/mmhlogo.png"
               alt="MMH Trading Academy"
-              width={100}
+              width={120}
               height={80}
               className="object-contain w-[90px] md:w-[120px]"
               priority
             />
           </Link>
 
-          {/* DESKTOP MENU */}
+          {/* --- DESKTOP NAVIGATION --- */}
           <ul className="hidden xl:flex items-center gap-6 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
+            
+            {/* Signals Dropdown */}
             <li className="relative group py-2 cursor-pointer hover:text-cyan-400 transition-all">
               <span className="flex items-center gap-1">Signals <ChevronDown size={12} className="group-hover:rotate-180 transition-transform" /></span>
               <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0">
@@ -136,146 +144,145 @@ export default function Navbar() {
                 </div>
               </div>
             </li>
+
             <Link href="/results" className="hover:text-cyan-400 transition-colors uppercase">Results</Link>
             <Link href="/brokers" className="hover:text-cyan-400 transition-colors uppercase">Brokers</Link>
+
+            {/* Courses Dropdown (Updated Logic) */}
             <li className="relative group py-2 cursor-pointer hover:text-cyan-400 transition-all">
               <div className="flex items-center gap-1">
                 <Link href="/courses" className="hover:text-cyan-400 transition-colors">Courses</Link>
                 <ChevronDown size={12} className="group-hover:rotate-180 transition-transform" />
               </div>
               <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-                <div className="bg-[#0D1117] border border-white/10 p-2 rounded-xl min-w-[200px] shadow-2xl">
+                <div className="bg-[#0D1117] border border-white/10 p-2 rounded-xl min-w-[220px] shadow-2xl overflow-hidden">
                   {courses.length > 0 ? (
-                    courses.map((course) => (
-                      <Link key={course._id} href={`/courses/${course._id}`} className="block p-2.5 hover:bg-white/5 rounded-lg transition text-[9px] hover:text-cyan-400 whitespace-nowrap">
-                        {course.courseName}
-                      </Link>
-                    ))
+                    courses.map((course) => {
+                      // Check if user has access or is admin
+                      const hasAccess = session?.user?.role === "ADMIN" || session?.user?.enrolledCourses?.includes(course._id);
+                      return (
+                        <Link 
+                          key={course._id} 
+                          href={`/courses/${course._id}`} 
+                          className="flex items-center justify-between p-3 hover:bg-white/5 rounded-lg transition group/item"
+                        >
+                          <span className="text-[9px] text-slate-400 group-hover/item:text-cyan-400 uppercase font-black tracking-widest">
+                            {course.courseName}
+                          </span>
+                          {!hasAccess && (
+                            <Lock size={10} className="text-slate-700 group-hover/item:text-cyan-500/40" />
+                          )}
+                        </Link>
+                      );
+                    })
                   ) : (
-                    <p className="p-2.5 text-[8px] text-slate-600 animate-pulse font-black uppercase">Initialising...</p>
+                    <p className="p-4 text-[8px] text-slate-600 animate-pulse font-black uppercase tracking-widest text-center">Initialising Data...</p>
                   )}
                 </div>
               </div>
             </li>
-            <Link href="/analysis" className="hover:text-cyan-400 transition-colors uppercase">Analysis</Link>
-            <Link href="/Lot-size-calculator" className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 uppercase"><Calculator size={14} className="text-cyan-500" /> Lot Size Calculator</Link>
-            <Link href="/offers" className="text-cyan-400 font-black flex items-center gap-1 uppercase"><Zap size={12} fill="currentColor" /> Offers</Link>
 
-            {/* Admin Link (Only visible if Admin is logged in) */}
+            <Link href="/analysis" className="hover:text-cyan-400 transition-colors uppercase">Analysis</Link>
+            <Link href="/Lot-size-calculator" className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 uppercase">
+              <Calculator size={14} className="text-cyan-500" /> Calculator
+            </Link>
+            <Link href="/offers" className="text-cyan-400 font-black flex items-center gap-1 uppercase italic">
+              <Zap size={12} fill="currentColor" /> Offers
+            </Link>
+
+            {/* Admin Badge */}
             {session?.user?.role === "ADMIN" && (
-              <Link href="/admin" className="text-orange-500 font-black border border-orange-500/20 px-2 py-1 rounded hover:bg-orange-500 hover:text-white transition-all uppercase">Admin</Link>
+              <Link href="/admin" className="text-orange-500 font-black border border-orange-500/20 px-3 py-1 rounded-lg hover:bg-orange-500 hover:text-white transition-all uppercase text-[9px]">
+                Admin Panel
+              </Link>
             )}
           </ul>
 
-          {/* ACTIONS (JOIN NOW OR LOGOUT) */}
+          {/* --- RIGHT ACTIONS --- */}
           <div className="flex items-center gap-4">
             {status === "authenticated" ? (
               <button
                 onClick={() => signOut()}
-                className="hidden sm:flex items-center gap-2 bg-white/5 border border-white/10 text-white px-5 py-2.5 rounded font-black text-[9px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all shadow-xl group"
+                className="hidden sm:flex items-center gap-2 bg-white/5 border border-white/10 text-white px-5 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all group shadow-2xl"
               >
                 <LogOut size={14} className="text-red-500 group-hover:text-white transition-colors" />
-                Sign Out
+                Logout
               </button>
             ) : (
-              <Link href="/login" className="hidden sm:block bg-cyan-500 text-black px-6 py-2.5 rounded font-black text-[9px] uppercase tracking-widest hover:bg-white transition-all shadow-[0_0_20px_rgba(34,211,238,0.2)]">
-                Join Now
+              <Link href="/login" className="hidden sm:block bg-cyan-500 text-black px-6 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-white transition-all shadow-lg shadow-cyan-500/20">
+                Join Academy
               </Link>
             )}
 
-            <button onClick={() => setIsOpen(!isOpen)} className="xl:hidden text-white z-[120] outline-none p-2">
+            {/* Mobile Toggle */}
+            <button onClick={() => setIsOpen(!isOpen)} className="xl:hidden text-white z-[120] p-2 outline-none">
               {isOpen ? <X size={28} className="text-cyan-500" /> : <Menu size={28} />}
             </button>
           </div>
         </div>
 
-        {/* MOBILE MENU */}
-        <div className={`fixed inset-0 h-screen w-full bg-[#010409] z-[105] transition-all duration-500 ${isOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full pointer-events-none"} xl:hidden`}>
-          <div className="flex flex-col h-full pt-28 px-6 pb-10 overflow-y-auto scrollbar-hide">
-
-            {/* Logged In User Info Mobile */}
+        {/* --- MOBILE MENU OVERLAY --- */}
+        <div className={`fixed inset-0 h-screen w-full bg-[#010409] z-[105] transition-all duration-500 ease-in-out ${isOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full pointer-events-none"} xl:hidden`}>
+          <div className="flex flex-col h-full pt-32 px-6 pb-10 overflow-y-auto scrollbar-hide">
+            
+            {/* User Profile Card Mobile */}
             {session && (
-              <div className="flex items-center gap-3 bg-white/5 p-4 rounded-2xl mb-6 border border-white/10">
-                <div className="bg-cyan-500 p-2 rounded-lg text-black">
-                  <UserIcon size={20} />
-                </div>
+              <div className="flex items-center gap-4 bg-white/5 p-5 rounded-3xl mb-8 border border-white/10 shadow-2xl">
+                <div className="bg-cyan-500 p-3 rounded-2xl text-black shadow-lg"><UserIcon size={24} /></div>
                 <div>
-                  <p className="text-[10px] text-slate-500 font-bold uppercase">Active Trader</p>
-                  <p className="text-sm text-white font-black uppercase tracking-tighter">{session.user.name}</p>
+                  <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">{session.user.role || 'Member'}</p>
+                  <p className="text-lg text-white font-black uppercase italic tracking-tight">{session.user.username || session.user.name}</p>
                 </div>
               </div>
             )}
 
-            {/* 1. COURSES MOBILE */}
-            <div className="border-b border-white/5 py-3">
-              <div className="flex items-center justify-between">
-                <Link href="/courses" onClick={() => setIsOpen(false)} className="text-white font-black uppercase text-base italic flex items-center gap-2">
-                  Courses
+            {/* Mobile Menu Links */}
+            <div className="flex flex-col space-y-1">
+              {/* Courses Accordion Mobile */}
+              <div className="border-b border-white/5">
+                <button onClick={() => toggleDropdown('courses')} className="w-full flex items-center justify-between text-white font-black uppercase text-xl italic py-5">
+                  Academy Courses <ChevronDown size={20} className={`text-cyan-500 transition-transform duration-300 ${activeDropdown === 'courses' ? "rotate-180" : ""}`} />
+                </button>
+                {activeDropdown === 'courses' && (
+                  <div className="grid grid-cols-1 gap-1 py-4 pl-4 border-l-2 border-cyan-500/20 mb-4 animate-in slide-in-from-top-2">
+                    {courses.map(course => {
+                      const hasAccess = session?.user?.role === "ADMIN" || session?.user?.enrolledCourses?.includes(course._id);
+                      return (
+                        <Link key={course._id} href={`/courses/${course._id}`} onClick={() => setIsOpen(false)} className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase py-3 hover:text-cyan-400 transition-colors">
+                          {course.courseName}
+                          {!hasAccess && <Lock size={12} className="text-slate-800" />}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <Link href="/signals/forex" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Signals Protocol</Link>
+              <Link href="/results" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Performance</Link>
+              <Link href="/brokers" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Trusted Brokers</Link>
+              <Link href="/Lot-size-calculator" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic flex items-center justify-between">Risk Calculator <Calculator size={22} className="text-cyan-500" /></Link>
+              <Link href="/offers" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-cyan-400 font-black uppercase text-xl italic flex items-center justify-between">Special Offers <Zap size={22} fill="currentColor" /></Link>
+            </div>
+
+            {/* Mobile Auth Button */}
+            <div className="mt-auto pt-10">
+              {status === "authenticated" ? (
+                <button onClick={() => { signOut(); setIsOpen(false); }} className="bg-red-500/10 border border-red-500/20 text-red-500 w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl flex items-center justify-center gap-3">
+                  <LogOut size={16} /> Sign Out System
+                </button>
+              ) : (
+                <Link href="/login" onClick={() => setIsOpen(false)} className="bg-cyan-500 text-black w-full py-5 rounded-2xl font-black text-center uppercase tracking-widest text-xs shadow-2xl block shadow-cyan-500/20">
+                  Initialise Member Access
                 </Link>
-                <button onClick={() => toggleDropdown('courses')} className="p-3 text-cyan-500"><ChevronDown size={20} className={activeDropdown === 'courses' ? "rotate-180 transition-transform" : "transition-transform"} /></button>
-              </div>
-              {activeDropdown === 'courses' && (
-                <div className="mt-2 grid grid-cols-1 gap-2 pl-4 animate-in slide-in-from-top-2">
-                  {courses.map(course => (
-                    <Link key={course._id} href={`/courses/${course._id}`} onClick={() => setIsOpen(false)} className="text-slate-400 text-[11px] font-bold uppercase py-2 border-l border-cyan-500/30 pl-4 hover:text-cyan-400">
-                      {course.courseName}
-                    </Link>
-                  ))}
-                </div>
               )}
             </div>
 
-            {/* 2. SIGNALS MOBILE */}
-            <div className="border-b border-white/5 py-3">
-              <button onClick={() => toggleDropdown('signals')} className="w-full flex items-center justify-between text-white font-black uppercase text-base italic">
-                Signals <ChevronDown size={20} className={`text-cyan-500 ${activeDropdown === 'signals' ? "rotate-180 transition-transform" : "transition-transform"}`} />
-              </button>
-              {activeDropdown === 'signals' && (
-                <div className="mt-4 space-y-5 pl-4 animate-in slide-in-from-top-2">
-                  {signalCategories.map(cat => (
-                    <div key={cat.name}>
-                      <p className="text-cyan-500 text-[9px] font-black uppercase mb-2 tracking-widest">{cat.name}</p>
-                      <div className="grid grid-cols-2 gap-2">
-                        {cat.sub.map(s => (
-                          <Link key={s.label} href={`/signals/${cat.slug}?strategy=${s.strategy}`} onClick={() => setIsOpen(false)} className="text-slate-400 text-[10px] font-bold uppercase py-1 hover:text-white transition-colors">{s.label}</Link>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* 3. STATIC LINKS */}
-            <div className="flex flex-col">
-              <Link href="/results" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-base italic">Results</Link>
-              <Link href="/brokers" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-base italic">Brokers</Link>
-              <Link href="/analysis" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-base italic">Analysis</Link>
-              <Link href="/Lot-size-calculator" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-base italic flex items-center justify-between">
-                Lot Size Calculator <Calculator size={18} className="text-cyan-500" />
-              </Link>
-              <Link href="/offers" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-cyan-400 font-black uppercase text-base italic flex items-center justify-between">
-                Special Offers <Zap size={18} fill="currentColor" />
-              </Link>
-            </div>
-
-            {/* AUTH BUTTON MOBILE */}
-            {status === "authenticated" ? (
-              <button
-                onClick={() => { signOut(); setIsOpen(false); }}
-                className="mt-8 bg-white/5 border border-red-500/20 text-red-500 w-full py-4 rounded font-black text-center uppercase tracking-widest text-xs flex items-center justify-center gap-2"
-              >
-                <LogOut size={16} /> Sign Out Protocol
-              </button>
-            ) : (
-              <Link href="/login" onClick={() => setIsOpen(false)} className="mt-8 bg-cyan-500 text-black w-full py-4 rounded font-black text-center uppercase tracking-widest text-xs">Join Academy Now</Link>
-            )}
-
-            {/* FOOTER CONTACTS */}
-            <div className="mt-10 flex justify-center gap-8 pb-10 border-t border-white/5 pt-10">
-              <a href="https://wa.me/966549357534" className="text-slate-500 hover:text-green-500 transition-colors"><FaWhatsapp size={22} /></a>
-              <a href="tel:+966549357534" className="text-slate-500 hover:text-cyan-500 transition-colors"><Phone size={22} /></a>
-              <a href="mailto:info@mmh.com" className="text-slate-500 hover:text-cyan-500 transition-colors"><Mail size={22} /></a>
+            {/* Social / Contact Footer */}
+            <div className="mt-10 flex justify-center gap-10 pb-10 border-t border-white/5 pt-10">
+              <a href="https://wa.me/966549357534" target="_blank" rel="noreferrer" className="text-slate-500 hover:text-green-500 transition-colors"><FaWhatsapp size={24} /></a>
+              <a href="tel:+966549357534" className="text-slate-500 hover:text-cyan-500 transition-colors"><Phone size={24} /></a>
+              <a href="mailto:info@mmh.com" className="text-slate-500 hover:text-cyan-500 transition-colors"><Mail size={24} /></a>
             </div>
           </div>
         </div>
