@@ -2,7 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import { NextResponse } from "next/server";
 import Course from "@/models/Course";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route"; // Path check kar lein apne structure ke mutabiq
+import { authOptions } from "../../auth/[...nextauth]/route"; // Path as per your structure
 
 // GET single course
 export async function GET(req, { params }) {
@@ -18,10 +18,10 @@ export async function GET(req, { params }) {
 
     // 2. Access Check: Agar Student hai to check karo ke ID uske enrolledCourses mein hai ya nahi
     if (session.user.role !== "ADMIN") {
-      const hasAccess = session.user.enrolledCourses.includes(id);
+      const hasAccess = session.user.enrolledCourses?.includes(id);
       if (!hasAccess) {
         return NextResponse.json(
-          { success: false, message: "Aapke paas is course ki access nahi hai." },
+          { success: false, message: "Aapke paas is course ki access nahi hai. Kindly payment karein." },
           { status: 403 }
         );
       }
