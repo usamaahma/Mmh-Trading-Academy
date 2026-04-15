@@ -8,46 +8,40 @@ export async function GET() {
   try {
     await dbConnect();
 
-    // 1. Session se user ka data nikalna
+    // 1. Session check karein (lekin block nahi karna guest ko)
     const session = await getServerSession(authOptions);
 
-    // Agar user login nahi hai
+    // Case A: GUEST (Login nahi hai) -> Navbar ke liye sirf Names aur IDs bhej do
     if (!session) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized access" },
-        { status: 401 }
-      );
+      const publicCourses = await Course.find({}).select("courseName _id").sort({ createdAt: -1 });
+      return NextResponse.json({ success: true, data: publicCourses, isGuest: true });
     }
 
-    let filter = {};
-
-    // 2. Role check karna
-    // Agar user ADMIN nahi hai (yani Student hai), toh filter lagao
-    if (session.user.role !== "ADMIN") {
-      filter = {
-        _id: { $in: session.user.enrolledCourses }
-      };
+    // Case B: ADMIN -> Saare courses ka full data bhej do
+    if (session.user.role === "ADMIN") {
+      const allCourses = await Course.find({}).sort({ createdAt: -1 });
+      return NextResponse.json({ success: true, data: allCourses });
     }
 
-    // 3. Database se data nikalna (Admin ke liye saare, Student ke liye filtered)
-    const courses = await Course.find(filter).sort({ createdAt: -1 });
+    // Case C: STUDENT -> Sirf wahi courses jo khariday hain
+    const enrolledFilter = {
+      _id: { $in: session.user.enrolledCourses || [] }
+    };
+    const studentCourses = await Course.find(enrolledFilter).sort({ createdAt: -1 });
 
-    return NextResponse.json({ success: true, data: courses });
+    return NextResponse.json({ success: true, data: studentCourses });
+
   } catch (error) {
-    return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }
 
-// POST Method (Wese hi rahega, lekin behtar hai yahan Admin check laga dein)
+// POST Method (Admin security ke sath same rahega)
 export async function POST(req) {
   try {
     await dbConnect();
     const session = await getServerSession(authOptions);
 
-    // Security: Sirf Admin course create kar sakay
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
     }
