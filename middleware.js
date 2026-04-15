@@ -50,7 +50,6 @@ export const config = {
     matcher: [
         "/admin/:path*", 
         "/signals/:path*", 
-        "/courses/:path*", 
         "/Lot-size-calculator"
     ],
 };

@@ -27,7 +27,9 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [courses, setCourses] = useState([]);
 
-  // 1. Fetch Courses (Guest and User friendly)
+  const ADMIN_WHATSAPP = "https://wa.me/966549357534";
+
+  // 1. Fetch Courses
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -41,16 +43,35 @@ export default function Navbar() {
       }
     };
     fetchCourses();
-  }, [status]); // Status change par refresh taake access sahi show ho
+  }, [status]);
 
-  // 2. Scroll Effect
+  // 2. Course Access Logic (Alert + WhatsApp)
+  const handleCourseClick = (e, courseId, courseName) => {
+    if (status === "unauthenticated") {
+      e.preventDefault();
+      alert("Please login first to view course details.");
+      window.location.href = "/login";
+      return;
+    }
+
+    if (session?.user?.role === "ADMIN") return;
+
+    const isEnrolled = session?.user?.enrolledCourses?.includes(courseId);
+    if (!isEnrolled) {
+      e.preventDefault();
+      alert(`You haven't paid for "${courseName}".\n\nContacting Admin for access...`);
+      window.open(ADMIN_WHATSAPP, "_blank");
+    }
+  };
+
+  // 3. Scroll Effect
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 3. Prevent Scroll when Mobile Menu Open
+  // 4. Prevent Scroll when Mobile Menu Open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -121,7 +142,7 @@ export default function Navbar() {
           {/* --- DESKTOP NAVIGATION --- */}
           <ul className="hidden xl:flex items-center gap-6 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
             
-            {/* Signals Dropdown */}
+            {/* Signals Dropdown (Accessible to all logged in users) */}
             <li className="relative group py-2 cursor-pointer hover:text-cyan-400 transition-all">
               <span className="flex items-center gap-1">Signals <ChevronDown size={12} className="group-hover:rotate-180 transition-transform" /></span>
               <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0">
@@ -148,7 +169,7 @@ export default function Navbar() {
             <Link href="/results" className="hover:text-cyan-400 transition-colors uppercase">Results</Link>
             <Link href="/brokers" className="hover:text-cyan-400 transition-colors uppercase">Brokers</Link>
 
-            {/* Courses Dropdown (Updated Logic) */}
+            {/* Courses Dropdown (Restricted Access) */}
             <li className="relative group py-2 cursor-pointer hover:text-cyan-400 transition-all">
               <div className="flex items-center gap-1">
                 <Link href="/courses" className="hover:text-cyan-400 transition-colors">Courses</Link>
@@ -158,12 +179,12 @@ export default function Navbar() {
                 <div className="bg-[#0D1117] border border-white/10 p-2 rounded-xl min-w-[220px] shadow-2xl overflow-hidden">
                   {courses.length > 0 ? (
                     courses.map((course) => {
-                      // Check if user has access or is admin
                       const hasAccess = session?.user?.role === "ADMIN" || session?.user?.enrolledCourses?.includes(course._id);
                       return (
                         <Link 
                           key={course._id} 
                           href={`/courses/${course._id}`} 
+                          onClick={(e) => handleCourseClick(e, course._id, course.courseName)}
                           className="flex items-center justify-between p-3 hover:bg-white/5 rounded-lg transition group/item"
                         >
                           <span className="text-[9px] text-slate-400 group-hover/item:text-cyan-400 uppercase font-black tracking-widest">
@@ -190,7 +211,6 @@ export default function Navbar() {
               <Zap size={12} fill="currentColor" /> Offers
             </Link>
 
-            {/* Admin Badge */}
             {session?.user?.role === "ADMIN" && (
               <Link href="/admin" className="text-orange-500 font-black border border-orange-500/20 px-3 py-1 rounded-lg hover:bg-orange-500 hover:text-white transition-all uppercase text-[9px]">
                 Admin Panel
@@ -214,7 +234,6 @@ export default function Navbar() {
               </Link>
             )}
 
-            {/* Mobile Toggle */}
             <button onClick={() => setIsOpen(!isOpen)} className="xl:hidden text-white z-[120] p-2 outline-none">
               {isOpen ? <X size={28} className="text-cyan-500" /> : <Menu size={28} />}
             </button>
@@ -225,7 +244,6 @@ export default function Navbar() {
         <div className={`fixed inset-0 h-screen w-full bg-[#010409] z-[105] transition-all duration-500 ease-in-out ${isOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full pointer-events-none"} xl:hidden`}>
           <div className="flex flex-col h-full pt-32 px-6 pb-10 overflow-y-auto scrollbar-hide">
             
-            {/* User Profile Card Mobile */}
             {session && (
               <div className="flex items-center gap-4 bg-white/5 p-5 rounded-3xl mb-8 border border-white/10 shadow-2xl">
                 <div className="bg-cyan-500 p-3 rounded-2xl text-black shadow-lg"><UserIcon size={24} /></div>
@@ -236,9 +254,7 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* Mobile Menu Links */}
             <div className="flex flex-col space-y-1">
-              {/* Courses Accordion Mobile */}
               <div className="border-b border-white/5">
                 <button onClick={() => toggleDropdown('courses')} className="w-full flex items-center justify-between text-white font-black uppercase text-xl italic py-5">
                   Academy Courses <ChevronDown size={20} className={`text-cyan-500 transition-transform duration-300 ${activeDropdown === 'courses' ? "rotate-180" : ""}`} />
@@ -248,7 +264,12 @@ export default function Navbar() {
                     {courses.map(course => {
                       const hasAccess = session?.user?.role === "ADMIN" || session?.user?.enrolledCourses?.includes(course._id);
                       return (
-                        <Link key={course._id} href={`/courses/${course._id}`} onClick={() => setIsOpen(false)} className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase py-3 hover:text-cyan-400 transition-colors">
+                        <Link 
+                          key={course._id} 
+                          href={`/courses/${course._id}`} 
+                          onClick={(e) => { setIsOpen(false); handleCourseClick(e, course._id, course.courseName); }} 
+                          className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase py-3 hover:text-cyan-400 transition-colors"
+                        >
                           {course.courseName}
                           {!hasAccess && <Lock size={12} className="text-slate-800" />}
                         </Link>
@@ -265,7 +286,6 @@ export default function Navbar() {
               <Link href="/offers" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-cyan-400 font-black uppercase text-xl italic flex items-center justify-between">Special Offers <Zap size={22} fill="currentColor" /></Link>
             </div>
 
-            {/* Mobile Auth Button */}
             <div className="mt-auto pt-10">
               {status === "authenticated" ? (
                 <button onClick={() => { signOut(); setIsOpen(false); }} className="bg-red-500/10 border border-red-500/20 text-red-500 w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl flex items-center justify-center gap-3">
@@ -278,9 +298,8 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Social / Contact Footer */}
             <div className="mt-10 flex justify-center gap-10 pb-10 border-t border-white/5 pt-10">
-              <a href="https://wa.me/966549357534" target="_blank" rel="noreferrer" className="text-slate-500 hover:text-green-500 transition-colors"><FaWhatsapp size={24} /></a>
+              <a href={ADMIN_WHATSAPP} target="_blank" rel="noreferrer" className="text-slate-500 hover:text-green-500 transition-colors"><FaWhatsapp size={24} /></a>
               <a href="tel:+966549357534" className="text-slate-500 hover:text-cyan-500 transition-colors"><Phone size={24} /></a>
               <a href="mailto:info@mmh.com" className="text-slate-500 hover:text-cyan-500 transition-colors"><Mail size={24} /></a>
             </div>
