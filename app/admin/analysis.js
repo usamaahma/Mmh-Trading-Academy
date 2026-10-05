@@ -9,6 +9,8 @@ export default function AnalysisManager() {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingData, setEditingData] = useState(null);
+    const [deletingId, setDeletingId] = useState(null);
+    const [deleteError, setDeleteError] = useState("");
 
     const categories = ["FOREX", "STOCKS", "CRYPTO"];
 
@@ -41,11 +43,17 @@ export default function AnalysisManager() {
 
     const handleDelete = async (id) => {
         if (!confirm("Bhai delete kar doon?")) return;
+        setDeletingId(id);
+        setDeleteError("");
         try {
             const res = await fetch(`/api/analysis/${id}`, { method: "DELETE" });
-            if (res.ok) fetchAnalyses();
+            const result = await res.json();
+            if (!res.ok) throw new Error(result.error || result.message || "Could not delete analysis.");
+            setAnalyses((current) => current.filter((item) => item._id !== id));
         } catch (err) { 
-            console.error(err); 
+            setDeleteError(err.message || "Could not delete analysis. Please try again.");
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -77,6 +85,12 @@ export default function AnalysisManager() {
                     </button>
                 )}
             </div>
+
+            {deleteError && (
+                <p role="alert" className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                    {deleteError}
+                </p>
+            )}
 
             {showForm ? (
                 <div className="relative bg-black/20 rounded-3xl border border-white/5 p-2 overflow-hidden shadow-2xl">
@@ -128,7 +142,7 @@ export default function AnalysisManager() {
                                                     <div className="absolute inset-0 bg-gradient-to-t from-[#0D1117] via-transparent to-transparent opacity-80" />
                                                     
                                                     {/* ACTIONS ON HOVER */}
-                                                    <div className="absolute top-3 right-3 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                                    <div className="absolute top-3 right-3 flex gap-2 translate-y-0 opacity-100 transition-all duration-300 sm:translate-y-2 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100">
                                                         <button 
                                                             onClick={() => { setEditingData(item); setShowForm(true); }} 
                                                             className="p-2 bg-black/80 hover:bg-cyan-500 text-white hover:text-black rounded-lg backdrop-blur-md transition-all border border-white/10"
@@ -137,7 +151,10 @@ export default function AnalysisManager() {
                                                         </button>
                                                         <button 
                                                             onClick={() => handleDelete(item._id)} 
-                                                            className="p-2 bg-black/80 hover:bg-red-500 text-white rounded-lg backdrop-blur-md transition-all border border-white/10"
+                                                            disabled={deletingId === item._id}
+                                                            aria-label={`Delete ${item.heading}`}
+                                                            title={deletingId === item._id ? "Deleting..." : "Delete analysis"}
+                                                            className="p-2 bg-black/80 hover:bg-red-500 text-white rounded-lg backdrop-blur-md transition-all border border-white/10 disabled:opacity-50"
                                                         >
                                                             <Trash2 size={14} />
                                                         </button>

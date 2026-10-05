@@ -32,7 +32,7 @@ export default function Footer() {
     <footer className="bg-[#010409] text-slate-400 border-t border-cyan-500/10 pt-16 pb-8 font-sans">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
 
-        {/* 🔹 TOP SECTION: BRAND, LINKS & CEO MESSAGE */}
+        {/* 🔹 TOP SECTION: BRAND, LINKS & FOUNDER MESSAGE */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16 border-b border-white/5 pb-16">
 
           {/* LOGO & DESCRIPTION */}
@@ -48,7 +48,7 @@ export default function Footer() {
               />
             </Link>
             <p className="text-[12px] leading-relaxed max-w-sm text-slate-500">
-              Pakistan's premier trading protocol. Empowering the next generation of institutional traders through SMC, MSNR, and algorithmic analysis.
+              Pakistan&apos;s premier trading protocol. Empowering the next generation of institutional traders through SMC, MSNR, and algorithmic analysis.
             </p>
             <div className="flex flex-wrap justify-center lg:justify-start items-center gap-4">
               <div className="flex items-center gap-2 text-cyan-500 font-black text-[9px] uppercase tracking-widest bg-cyan-500/5 px-3 py-1.5 rounded-full border border-cyan-500/10">
@@ -102,7 +102,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* 🔹 CEO MESSAGE SECTION (EXTRA LARGE IMAGE & HOVER GRAY) */}
+          {/* 🔹 FOUNDER MESSAGE SECTION */}
           <div className="relative group bg-white/[0.03] border border-white/5 rounded-[2.5rem] p-10 overflow-visible flex flex-col items-center shadow-inner mt-20 lg:mt-0">
             {/* LARGE Background Quote Icon */}
             <div className="absolute top-6 right-6 p-4 opacity-5 group-hover:opacity-10 transition-opacity z-0">
@@ -120,23 +120,24 @@ export default function Footer() {
                 <div className="relative w-full h-full drop-shadow-[0_35px_35px_rgba(0,0,0,0.8)] transition-all duration-500">
                   <Image
                     src="/author.png"
-                    alt="CEO MMH"
+                    alt="Founder of MMH Trading Academy"
                     fill
+                    sizes="224px"
                     className="object-contain grayscale-0 group-hover:grayscale transition-all duration-700 ease-in-out scale-110 group-hover:scale-105"
                   />
                 </div>
               </div>
 
-              {/* CEO Text Details */}
+              {/* Founder Message */}
               <div className="text-center">
                 {/* <p className="text-cyan-500 font-black text-[10px] uppercase tracking-[0.5em] mb-1">
                   Founding Protocol
                 </p> */}
                 <h4 className="text-white font-black uppercase italic tracking-tighter text-[28px] md:text-[28px] leading-none mb-3">
-                  CEO <span className="text-cyan-400">MESSAGE</span>
+                  FOUNDER&apos;S <span className="text-cyan-400">MESSAGE</span>
                 </h4>
                 <p className="text-[11px] md:text-[11px] leading-[1.8] text-slate-200 italic max-w-sm text-center font-bold uppercase tracking-widest">
-                  "Trading is not about being right, it's about being disciplined. Our mission is to transform retail mindsets into institutional powerhouses."
+                  &quot;Trading is not about being right, it&apos;s about being disciplined. Our mission is to transform retail mindsets into institutional powerhouses.&quot;
                 </p>
               </div>
 
