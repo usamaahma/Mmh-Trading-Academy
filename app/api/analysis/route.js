@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/dbConnect";
 import Analysis from "@/models/Analysis";
+import { requireAdmin } from "@/lib/adminAuth";
 import { NextResponse } from "next/server";
 
 // 🚀 1. GET: Saare Analysis ya Category wise fetch karna
@@ -26,6 +27,9 @@ export async function GET(req) {
 // 🚀 2. POST: Naya Analysis create karna
 export async function POST(req) {
   try {
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
     await dbConnect();
     const body = await req.json();
 

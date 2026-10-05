@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Broker from "@/models/Broker";
+import { requireAdmin } from "@/lib/adminAuth";
 
 // 1. GET (Single Broker): /api/brokers/[id]
 export async function GET(req, { params }) {
@@ -23,8 +24,11 @@ export async function GET(req, { params }) {
 
 // 2. PUT (Update): /api/brokers/[id]
 export async function PUT(req, { params }) {
-    await dbConnect();
     try {
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
+    await dbConnect();
         // Next.js 15 Fix: params ko await karein
         const { id } = await params; 
         const body = await req.json();
@@ -46,8 +50,11 @@ export async function PUT(req, { params }) {
 
 // 3. DELETE: /api/brokers/[id]
 export async function DELETE(req, { params }) {
-    await dbConnect();
     try {
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
+    await dbConnect();
         // Next.js 15 Fix: params ko await karein
         const { id } = await params; 
 

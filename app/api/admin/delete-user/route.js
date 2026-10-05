@@ -3,14 +3,14 @@ import User from "@/models/User";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // 👈 Path check karein
+import { requireAdmin } from "@/lib/adminAuth";
 
 export async function DELETE(req) {
     try {
-        const session = await getServerSession(authOptions);
+        const denied = await requireAdmin();
+        if (denied) return denied;
 
-        if (!session || session.user.role !== "ADMIN") {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const session = await getServerSession(authOptions);
 
         await dbConnect();
 

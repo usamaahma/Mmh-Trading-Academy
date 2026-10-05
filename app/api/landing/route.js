@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Landing from "@/models/Landing";
+import { requireAdmin } from "@/lib/adminAuth";
 
 // GET: Landing page ka data nikaalne ke liye
 export async function GET() {
@@ -15,8 +16,11 @@ export async function GET() {
 
 // POST: Naya data add ya update karne ke liye
 export async function POST(req) {
-  await dbConnect();
   try {
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
+    await dbConnect();
     const body = await req.json();
     
     // Agar pehle se data hai toh usay update karega, warna naya banayega

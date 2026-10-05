@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Signal from "@/models/Signal";
+import { requireAdmin, requireAuthenticated } from "@/lib/adminAuth";
 
 // 3. READ SINGLE SIGNAL
 export async function GET(req, { params }) {
-    await dbConnect();
     try {
+    const denied = await requireAuthenticated();
+    if (denied) return denied;
+
+    await dbConnect();
         // 🔥 Next.js 15 Fix: params ko await karna zaroori hai
         const { id } = await params;
 
@@ -20,8 +24,11 @@ export async function GET(req, { params }) {
 
 // 4. UPDATE (Edit Signal)
 export async function PUT(req, { params }) {
-    await dbConnect();
     try {
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
+    await dbConnect();
         // 🔥 Next.js 15 Fix
         const { id } = await params;
         const body = await req.json();
@@ -41,8 +48,11 @@ export async function PUT(req, { params }) {
 
 // 5. DELETE
 export async function DELETE(req, { params }) {
-    await dbConnect();
     try {
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
+    await dbConnect();
         // 🔥 Next.js 15 Fix
         const { id } = await params;
 
