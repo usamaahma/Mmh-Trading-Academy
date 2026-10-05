@@ -37,6 +37,10 @@ export default withAuth(
         return NextResponse.next();
     },
     {
+        secret: process.env.NEXTAUTH_SECRET,
+        pages: {
+            signIn: "/login",
+        },
         callbacks: {
             // !!token ka matlab hai user logged in hona chahiye bas.
             // Signals, Calculator aur Courses sab ke liye login zaroori hai.
