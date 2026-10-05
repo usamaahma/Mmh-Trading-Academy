@@ -50,7 +50,7 @@ export default function Navbar() {
     if (status === "unauthenticated") {
       e.preventDefault();
       alert("Please login / Enroll first to view course details.");
-      window.location.href = "/login";
+      window.location.assign("/login");
       return;
     }
 
@@ -134,7 +134,7 @@ export default function Navbar() {
               alt="MMH Trading Academy"
               width={120}
               height={80}
-              className="object-contain w-[90px] md:w-[120px]"
+              className="object-contain h-auto w-[90px] md:w-[120px]"
               priority
             />
           </Link>
@@ -281,6 +281,7 @@ export default function Navbar() {
 
               <Link href="/signals/forex" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Signals Protocol</Link>
               <Link href="/results" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Performance</Link>
+              <Link href="/analysis" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Market Analysis</Link>
               <Link href="/brokers" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Trusted Brokers</Link>
               <Link href="/Lot-size-calculator" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic flex items-center justify-between">Risk Calculator <Calculator size={22} className="text-cyan-500" /></Link>
               <Link href="/offers" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-cyan-400 font-black uppercase text-xl italic flex items-center justify-between">Special Offers <Zap size={22} fill="currentColor" /></Link>

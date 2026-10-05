@@ -49,6 +49,7 @@ export const config = {
     // Ye middleware in paths par trigger hoga
     matcher: [
         "/admin/:path*", 
+        "/courses/:path*",
         "/signals/:path*", 
         "/Lot-size-calculator"
     ],

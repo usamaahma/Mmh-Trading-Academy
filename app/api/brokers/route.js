@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Broker from "@/models/Broker";
+import { requireAdmin } from "@/lib/adminAuth";
 
 // 1. GET: Fetch ALL brokers (Frontend list ke liye)
 export async function GET() {
@@ -15,8 +16,11 @@ export async function GET() {
 
 // 2. POST: Create a new broker (Admin Panel se add karne ke liye)
 export async function POST(req) {
-    await dbConnect();
     try {
+        const denied = await requireAdmin();
+        if (denied) return denied;
+
+        await dbConnect();
         const body = await req.json();
         const newBroker = await Broker.create(body);
         return NextResponse.json({ success: true, data: newBroker }, { status: 201 });

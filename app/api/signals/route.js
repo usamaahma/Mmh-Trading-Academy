@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Signal from "@/models/Signal";
+import { requireAdmin, requireAuthenticated } from "@/lib/adminAuth";
 
 // 1. READ ALL (With Smart Filtering)
 export async function GET(req) {
-    await dbConnect();
     try {
+    const denied = await requireAuthenticated();
+    if (denied) return denied;
+
+    await dbConnect();
         const { searchParams } = new URL(req.url);
         const category = searchParams.get("category");
         const strategy = searchParams.get("strategy");
@@ -33,8 +37,11 @@ export async function GET(req) {
 
 // 2. CREATE (Wahi rahega)
 export async function POST(req) {
-    await dbConnect();
     try {
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
+    await dbConnect();
         const body = await req.json();
         const newSignal = await Signal.create(body);
         return NextResponse.json(newSignal, { status: 201 });

@@ -1,21 +1,13 @@
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { requireAdmin } from "@/lib/adminAuth";
 
 export async function PUT(req) {
     try {
-        const session = await getServerSession(authOptions);
-
-        // 1. Check ke request karne wala Admin hai ya nahi
-        if (!session || session.user.role !== "ADMIN") {
-            return NextResponse.json(
-                { error: "Unauthorized: Admin access required" },
-                { status: 401 }
-            );
-        }
+        const denied = await requireAdmin();
+        if (denied) return denied;
 
         await dbConnect();
 

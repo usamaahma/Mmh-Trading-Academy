@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/dbConnect";
 import Contact from "@/models/Contact";
+import { requireAdmin } from "@/lib/adminAuth";
 import { NextResponse } from "next/server";
 
 /**
@@ -8,6 +9,9 @@ import { NextResponse } from "next/server";
  */
 export async function DELETE(req, { params }) {
   try {
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
     await dbConnect();
 
     // IMPORTANT: Next.js 15 requires awaiting params to access the ID
@@ -48,6 +52,9 @@ export async function DELETE(req, { params }) {
 }
 export async function PATCH(req, { params }) {
   try {
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
     await dbConnect();
     const { id } = await params; // Await params for Next.js 15
     const body = await req.json();

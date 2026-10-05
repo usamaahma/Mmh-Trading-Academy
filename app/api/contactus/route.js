@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/dbConnect";
 import Contact from "@/models/Contact";
+import { requireAdmin } from "@/lib/adminAuth";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
@@ -40,6 +41,9 @@ export async function POST(req) {
 // Admin ke liye saare messages get karne ka route
 export async function GET() {
   try {
+    const denied = await requireAdmin();
+    if (denied) return denied;
+
     await dbConnect();
     const messages = await Contact.find({}).sort({ createdAt: -1 });
     return NextResponse.json({ success: true, data: messages });

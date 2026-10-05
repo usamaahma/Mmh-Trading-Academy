@@ -1,19 +1,12 @@
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { requireAdmin } from "@/lib/adminAuth";
 
 export async function GET() {
     try {
-        const session = await getServerSession(authOptions);
-
-        if (!session || session.user.role !== "ADMIN") {
-            return NextResponse.json(
-                { error: "Unauthorized: Admin access required" },
-                { status: 401 }
-            );
-        }
+        const denied = await requireAdmin();
+        if (denied) return denied;
 
         await dbConnect();
 

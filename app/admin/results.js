@@ -7,6 +7,8 @@ export default function ResultsManager() {
     const [results, setResults] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [editData, setEditData] = useState(null);
+    const [deletingId, setDeletingId] = useState(null);
+    const [deleteError, setDeleteError] = useState("");
 
     const fetchResults = async () => {
         const res = await fetch("/api/results");
@@ -18,8 +20,18 @@ export default function ResultsManager() {
 
     const handleDelete = async (id) => {
         if (!confirm("Are you sure?")) return;
-        const res = await fetch(`/api/results/${id}`, { method: "DELETE" });
-        if (res.ok) fetchResults();
+        setDeletingId(id);
+        setDeleteError("");
+        try {
+            const res = await fetch(`/api/results/${id}`, { method: "DELETE" });
+            const json = await res.json();
+            if (!res.ok) throw new Error(json.error || json.message || "Could not delete result.");
+            setResults((current) => current.filter((item) => item._id !== id));
+        } catch (error) {
+            setDeleteError(error.message || "Could not delete result. Please try again.");
+        } finally {
+            setDeletingId(null);
+        }
     };
 
     const handleSuccess = () => {
@@ -40,6 +52,12 @@ export default function ResultsManager() {
                 </button>
             </div>
 
+            {deleteError && (
+                <p role="alert" className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                    {deleteError}
+                </p>
+            )}
+
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
@@ -56,8 +74,8 @@ export default function ResultsManager() {
             )}
 
             {/* Table */}
-            <div className="bg-white/5 border border-white/5 rounded-3xl overflow-hidden">
-                <table className="w-full text-left">
+            <div className="bg-white/5 border border-white/5 rounded-3xl overflow-x-auto">
+                <table className="w-full min-w-[640px] text-left">
                     <thead className="bg-white/5 text-[10px] uppercase font-black tracking-widest text-slate-400">
                         <tr>
                             <th className="p-5">Title</th>
@@ -82,7 +100,7 @@ export default function ResultsManager() {
                                         <button onClick={() => { setEditData(item); setShowModal(true); }} className="p-2 hover:bg-cyan-500/20 text-cyan-500 rounded-lg">
                                             <Edit2 size={16} />
                                         </button>
-                                        <button onClick={() => handleDelete(item._id)} className="p-2 hover:bg-red-500/20 text-red-500 rounded-lg">
+                                        <button onClick={() => handleDelete(item._id)} disabled={deletingId === item._id} aria-label={`Delete ${item.title}`} title={deletingId === item._id ? "Deleting..." : "Delete result"} className="p-2 hover:bg-red-500/20 text-red-500 rounded-lg disabled:opacity-50">
                                             <Trash2 size={16} />
                                         </button>
                                     </div>

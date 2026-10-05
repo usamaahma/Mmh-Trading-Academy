@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Landing from "@/models/Landing";
+import { requireAdmin } from "@/lib/adminAuth";
 
 // UPDATE: Specific entry ko edit karne ke liye
 export async function PUT(req, { params }) {
-    await dbConnect();
     try {
-        const { id } = params;
+        const denied = await requireAdmin();
+        if (denied) return denied;
+
+        await dbConnect();
+        const { id } = await params;
         const body = await req.json();
 
         const updatedLanding = await Landing.findByIdAndUpdate(id, body, {
@@ -26,9 +30,12 @@ export async function PUT(req, { params }) {
 
 // DELETE: Specific entry ko urane ke liye
 export async function DELETE(req, { params }) {
-    await dbConnect();
     try {
-        const { id } = params;
+        const denied = await requireAdmin();
+        if (denied) return denied;
+
+        await dbConnect();
+        const { id } = await params;
         const deletedLanding = await Landing.findByIdAndDelete(id);
 
         if (!deletedLanding) {
