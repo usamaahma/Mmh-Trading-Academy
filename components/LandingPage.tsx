@@ -394,6 +394,66 @@ export default function ProfessionalForexLanding() {
           </div>
         </div>
       </section>
+{/* COURSE CAROUSEL */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="mb-10 text-center">
+            <h2 className={`${playfairClass} text-3xl text-white uppercase italic`}>
+              High-Quality <span className="text-cyan-400">Trading Education</span>
+            </h2>
+            <p className="text-white"> From Basics to Mastery</p>
+          </div>
+
+          <div
+            ref={scrollRef}
+            className="flex gap-6 overflow-x-auto scroll-smooth pb-8 no-scrollbar scrollbar-hide"
+          >
+            {courses.map((course, i) => (
+              <div
+                key={i}
+                onClick={() => openPopup("course", course.t)}
+                className="min-w-[280px] md:min-w-[350px] bg-[#0D1117] border border-white/5 rounded-3xl p-8 group hover:bg-cyan-900/10 transition-all cursor-pointer"
+              >
+                <span className="text-[10px] px-3 py-1 border border-cyan-500/30 text-cyan-400 rounded-full uppercase font-bold">
+                  {course.l}
+                </span>
+                <h3 className="text-xl font-bold text-white uppercase mt-6 mb-3 tracking-tighter">
+                  {course.t}
+                </h3>
+                <p className="text-xs text-slate-500 mb-8 leading-relaxed">
+                  {course.d}
+                </p>
+                <div className="flex items-center justify-between border-t border-white/5 pt-6">
+                  <span className="text-white font-bold">{course.p}</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openPopup("course", course.t);
+                    }}
+                    className="flex items-center gap-2 text-cyan-400 text-[10px] font-bold uppercase group-hover:gap-4 transition-all"
+                  >
+                    View Details <ArrowRight size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center gap-3">
+            <button
+              onClick={() => slide("left")}
+              className="p-4 bg-[#0D1117] border border-white/10 rounded-xl hover:text-cyan-400 transition-all active:scale-95"
+            >
+              <ChevronRight className="rotate-180" size={20} />
+            </button>
+            <button
+              onClick={() => slide("right")}
+              className="p-4 bg-[#0D1117] border border-white/10 rounded-xl hover:text-cyan-400 transition-all active:scale-95"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* METHODOLOGY SECTION */}
       <section className="py-16 bg-black/20">
@@ -600,67 +660,7 @@ export default function ProfessionalForexLanding() {
         </div>
       </section>
 
-      {/* COURSE CAROUSEL */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="mb-10 text-center">
-            <h2 className={`${playfairClass} text-3xl text-white uppercase italic`}>
-              High-Quality <span className="text-cyan-400">Trading Education</span>
-            </h2>
-            <p className="text-white"> From Basics to Mastery</p>
-          </div>
-
-          <div
-            ref={scrollRef}
-            className="flex gap-6 overflow-x-auto scroll-smooth pb-8 no-scrollbar scrollbar-hide"
-          >
-            {courses.map((course, i) => (
-              <div
-                key={i}
-                onClick={() => openPopup("course", course.t)}
-                className="min-w-[280px] md:min-w-[350px] bg-[#0D1117] border border-white/5 rounded-3xl p-8 group hover:bg-cyan-900/10 transition-all cursor-pointer"
-              >
-                <span className="text-[10px] px-3 py-1 border border-cyan-500/30 text-cyan-400 rounded-full uppercase font-bold">
-                  {course.l}
-                </span>
-                <h3 className="text-xl font-bold text-white uppercase mt-6 mb-3 tracking-tighter">
-                  {course.t}
-                </h3>
-                <p className="text-xs text-slate-500 mb-8 leading-relaxed">
-                  {course.d}
-                </p>
-                <div className="flex items-center justify-between border-t border-white/5 pt-6">
-                  <span className="text-white font-bold">{course.p}</span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openPopup("course", course.t);
-                    }}
-                    className="flex items-center gap-2 text-cyan-400 text-[10px] font-bold uppercase group-hover:gap-4 transition-all"
-                  >
-                    View Details <ArrowRight size={14} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center gap-3">
-            <button
-              onClick={() => slide("left")}
-              className="p-4 bg-[#0D1117] border border-white/10 rounded-xl hover:text-cyan-400 transition-all active:scale-95"
-            >
-              <ChevronRight className="rotate-180" size={20} />
-            </button>
-            <button
-              onClick={() => slide("right")}
-              className="p-4 bg-[#0D1117] border border-white/10 rounded-xl hover:text-cyan-400 transition-all active:scale-95"
-            >
-              <ChevronRight size={20} />
-            </button>
-          </div>
-        </div>
-      </section>
-
+      
       {/* FOREX MARKET HOURS & SESSION MATRIX */}
       <section className="py-20 px-4 bg-[#05080f]">
         <div className="max-w-7xl mx-auto">
