@@ -26,7 +26,11 @@ export default function LoginPage() {
             setError("Invalid Username or Password");
             setLoading(false);
         } else {
-            router.push("/"); // Login ke baad home par bhej do
+            const callbackUrl = new URLSearchParams(window.location.search).get("callbackUrl");
+            const destination = callbackUrl?.startsWith("/") && !callbackUrl.startsWith("//")
+                ? callbackUrl
+                : "/";
+            router.replace(destination);
             router.refresh();
         }
     };

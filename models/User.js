@@ -9,6 +9,12 @@ const UserSchema = new mongoose.Schema({
     lowercase: true,
     trim: true
   },
+  email: {
+    type: String,
+    lowercase: true,
+    trim: true,
+    match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  },
   password: { type: String, required: true },
   role: {
     type: String,

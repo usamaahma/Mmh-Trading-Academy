@@ -16,6 +16,7 @@ import {
   LogOut,
   User as UserIcon,
   Lock,
+  Bell,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import Image from "next/image";
@@ -26,6 +27,10 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [courses, setCourses] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationsOwnerId, setNotificationsOwnerId] = useState(null);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const ADMIN_WHATSAPP = "https://wa.me/966549357534";
 
@@ -44,6 +49,47 @@ export default function Navbar() {
     };
     fetchCourses();
   }, [status]);
+
+  useEffect(() => {
+    if (status !== "authenticated") return;
+
+    let active = true;
+    const loadNotifications = async () => {
+      try {
+        const res = await fetch("/api/notifications", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (active) {
+          setNotifications(data.notifications || []);
+          setUnreadCount(data.unreadCount || 0);
+          setNotificationsOwnerId(session.user.id);
+        }
+      } catch (error) {
+        console.error("Notification fetch error:", error);
+      }
+    };
+
+    loadNotifications();
+    const intervalId = setInterval(loadNotifications, 30000);
+    return () => {
+      active = false;
+      clearInterval(intervalId);
+    };
+  }, [status, session?.user?.id]);
+
+  const markNotificationRead = (notificationId) => {
+    setNotifications((current) => current.map((notification) =>
+      notification._id === notificationId
+        ? { ...notification, readAt: new Date().toISOString() }
+        : notification
+    ));
+    setUnreadCount((count) => Math.max(0, count - 1));
+    fetch("/api/notifications", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ notificationId }),
+    }).catch((error) => console.error("Notification update error:", error));
+  };
 
   // 2. Course Access Logic (Alert + WhatsApp)
   const handleCourseClick = (e, courseId, courseName) => {
@@ -113,6 +159,9 @@ export default function Navbar() {
     },
   ];
 
+  const visibleNotifications = notificationsOwnerId === session?.user?.id ? notifications : [];
+  const visibleUnreadCount = notificationsOwnerId === session?.user?.id ? unreadCount : 0;
+
   return (
     <div className="fixed top-0 left-0 w-full z-[100]">
       {/* --- TOP PROMO BANNER --- */}
@@ -149,14 +198,14 @@ export default function Navbar() {
                 <div className="bg-[#0D1117] border border-white/10 p-2 rounded-xl w-52 shadow-2xl">
                   {signalCategories.map((cat) => (
                     <div key={cat.name} className="group/sub relative">
-                      <Link href={`/signals/${cat.slug}`} className="flex items-center justify-between p-2.5 hover:bg-cyan-500/10 hover:text-cyan-400 rounded-lg transition-colors">
+                      <Link href={`/signals/${cat.slug}`} prefetch={false} className="flex items-center justify-between p-2.5 hover:bg-cyan-500/10 hover:text-cyan-400 rounded-lg transition-colors">
                         <span>{cat.name}</span>
                         <ChevronRight size={12} className="opacity-40" />
                       </Link>
                       <div className="absolute left-full top-0 ml-2 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-200 translate-x-1 group-hover/sub:translate-x-0">
                         <div className="bg-[#161B22] border border-white/10 p-2 rounded-xl w-44 shadow-2xl">
                           {cat.sub.map((s) => (
-                            <Link key={s.label} href={`/signals/${cat.slug}?strategy=${s.strategy}`} className="block p-2 text-[9px] text-slate-400 hover:text-cyan-400 hover:bg-white/5 rounded-md transition-colors">{s.label}</Link>
+                            <Link key={s.label} href={`/signals/${cat.slug}?strategy=${s.strategy}`} prefetch={false} className="block p-2 text-[9px] text-slate-400 hover:text-cyan-400 hover:bg-white/5 rounded-md transition-colors">{s.label}</Link>
                           ))}
                         </div>
                       </div>
@@ -220,6 +269,83 @@ export default function Navbar() {
 
           {/* --- RIGHT ACTIONS --- */}
           <div className="flex items-center gap-4">
+            {status === "authenticated" && (
+              <div className="relative z-[130]">
+                <button
+                  type="button"
+                  aria-label={`Notifications${visibleUnreadCount ? `, ${visibleUnreadCount} unread` : ""}`}
+                  aria-expanded={notificationsOpen}
+                  onClick={() => setNotificationsOpen((open) => !open)}
+                  className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white transition-colors hover:border-cyan-500/40 hover:text-cyan-400"
+                >
+                  <Bell size={18} />
+                  {visibleUnreadCount > 0 && (
+                    <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-black text-white">
+                      {visibleUnreadCount > 9 ? "9+" : visibleUnreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {notificationsOpen && (
+                  <section className="absolute right-0 top-full mt-3 w-[min(92vw,24rem)] overflow-hidden rounded-2xl border border-white/10 bg-[#0D1117] shadow-2xl">
+                    <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+                      <h2 className="text-sm font-black uppercase tracking-wider text-white">Notifications</h2>
+                      {visibleUnreadCount > 0 && (
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">
+                          {visibleUnreadCount} new
+                        </span>
+                      )}
+                    </div>
+                    <div className="max-h-[min(65vh,28rem)] overflow-y-auto">
+                      {visibleNotifications.length === 0 ? (
+                        <p className="px-4 py-8 text-center text-xs text-slate-500">You&apos;re all caught up.</p>
+                      ) : visibleNotifications.map((notification) => {
+                        const signal = notification.signal;
+                        if (!signal) {
+                          return (
+                            <div key={notification._id} className="border-b border-white/5 px-4 py-4 text-xs text-slate-500">
+                              This signal is no longer available.
+                            </div>
+                          );
+                        }
+
+                        const signalHref = `/signals/${signal.category.toLowerCase()}?strategy=${encodeURIComponent(signal.strategy)}&signal=${signal._id}`;
+                        return (
+                          <Link
+                            key={notification._id}
+                            href={signalHref}
+                            prefetch={false}
+                            onClick={() => {
+                              setNotificationsOpen(false);
+                              setIsOpen(false);
+                              if (!notification.readAt) markNotificationRead(notification._id);
+                            }}
+                            className={`flex items-start gap-3 border-b border-white/5 px-4 py-4 transition-colors hover:bg-white/5 ${notification.readAt ? "" : "bg-cyan-500/[0.06]"}`}
+                          >
+                            <span className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${notification.readAt ? "bg-white/5 text-slate-500" : "bg-cyan-500/10 text-cyan-400"}`}>
+                              <Bell size={15} />
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-xs leading-relaxed text-slate-300">
+                                Admin added a signal: <strong className="text-white">{signal.heading || signal.pair}</strong>
+                              </span>
+                              <span className="mt-1 block text-[10px] font-bold uppercase tracking-wider text-cyan-500">
+                                {signal.pair} · {signal.category}
+                              </span>
+                              <span className="mt-1 block text-[10px] text-slate-600">
+                                {new Date(notification.createdAt).toLocaleString()}
+                              </span>
+                            </span>
+                            {!notification.readAt && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-cyan-400" />}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </section>
+                )}
+              </div>
+            )}
+
             {status === "authenticated" ? (
               <button
                 onClick={() => signOut()}
@@ -279,7 +405,7 @@ export default function Navbar() {
                 )}
               </div>
 
-              <Link href="/signals/forex" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Signals Protocol</Link>
+              <Link href="/signals/forex" prefetch={false} onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Signals Protocol</Link>
               <Link href="/results" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Performance</Link>
               <Link href="/analysis" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Market Analysis</Link>
               <Link href="/brokers" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Trusted Brokers</Link>
