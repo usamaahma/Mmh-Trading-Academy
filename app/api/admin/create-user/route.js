@@ -13,12 +13,28 @@ export async function POST(req) {
         await dbConnect();
 
         // 2. Body se data nikalna (courses array bhi shamil hai)
-        const { username, password, role, courses } = await req.json();
+        const { username, email, password, role, courses } = await req.json();
 
         // 3. Basic validation
         if (!username || !password) {
             return NextResponse.json(
                 { error: "Username and Password are required" },
+                { status: 400 }
+            );
+        }
+
+        const normalizedRole = role || "STUDENT";
+        const usernameIsEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username);
+        const normalizedEmail = (email || (usernameIsEmail ? username : "")).trim().toLowerCase();
+        if (normalizedRole === "STUDENT" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+            return NextResponse.json(
+                { error: "A valid email address is required for student accounts" },
+                { status: 400 }
+            );
+        }
+        if (normalizedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+            return NextResponse.json(
+                { error: "Enter a valid email address" },
                 { status: 400 }
             );
         }
@@ -38,8 +54,9 @@ export async function POST(req) {
         // 6. User create karna database mein
         const newUser = await User.create({
             username: username.toLowerCase(),
+            email: normalizedEmail || undefined,
             password: hashedPassword,
-            role: role || "STUDENT",
+            role: normalizedRole,
             // Agar front-end se courses array aayi hai to wo save hogi, warna empty array []
             enrolledCourses: courses || []
         });

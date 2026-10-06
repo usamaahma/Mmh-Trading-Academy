@@ -11,6 +11,7 @@ export default function UserManager() {
 
   // Form States
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("STUDENT");
   const [selectedCourses, setSelectedCourses] = useState([]);
@@ -79,6 +80,7 @@ export default function UserManager() {
       body: JSON.stringify({
         id: editingUser?._id,
         username: username.toLowerCase(),
+        email: email.toLowerCase(),
         password,
         role,
         courses: selectedCourses
@@ -95,6 +97,7 @@ export default function UserManager() {
     setShowAddModal(false);
     setEditingUser(null);
     setUsername("");
+    setEmail("");
     setPassword("");
     setRole("STUDENT");
     setSelectedCourses([]);
@@ -127,6 +130,7 @@ export default function UserManager() {
           <thead>
             <tr className="bg-white/5 text-[9px] uppercase font-black tracking-[0.2em] text-slate-500">
               <th className="p-5">Credential ID</th>
+              <th className="p-5">Email</th>
               <th className="p-5">Access Role</th>
               <th className="p-5 text-right">Operation</th>
             </tr>
@@ -138,6 +142,7 @@ export default function UserManager() {
                   <p className="text-white font-bold uppercase tracking-wider">{user.username}</p>
                   <p className="text-[8px] text-slate-600 mt-1 uppercase">UID: {user._id.slice(-8)}</p>
                 </td>
+                <td className="p-5 text-xs text-slate-400">{user.email || user.username}</td>
                 <td className="p-5">
                   <span className={`px-3 py-1 rounded-lg text-[9px] font-black tracking-tighter ${user.role === "ADMIN" ? "bg-orange-500/10 text-orange-500" : "bg-cyan-500/10 text-cyan-500"}`}>
                     {user.role}
@@ -148,6 +153,7 @@ export default function UserManager() {
                     <button onClick={() => {
                       setEditingUser(user);
                       setUsername(user.username);
+                      setEmail(user.email || (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.username) ? user.username : ""));
                       setRole(user.role);
                       setSelectedCourses(user.enrolledCourses || []);
                       setShowAddModal(true);
@@ -191,6 +197,11 @@ export default function UserManager() {
                   <label className="text-[9px] font-black text-slate-500 uppercase ml-2">Secret Key</label>
                   <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-[#010409] border border-white/10 rounded-2xl p-4 text-white font-bold outline-none focus:border-cyan-500/50" placeholder="••••" required={!editingUser} />
                 </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[9px] font-black text-slate-500 uppercase ml-2">Email for Signal Alerts</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-[#010409] border border-white/10 rounded-2xl p-4 text-white font-bold outline-none focus:border-cyan-500/50" placeholder="trader@example.com" required={role === "STUDENT"} />
               </div>
 
               <div className="space-y-1">

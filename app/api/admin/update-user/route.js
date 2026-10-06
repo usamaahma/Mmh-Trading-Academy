@@ -12,7 +12,7 @@ export async function PUT(req) {
         await dbConnect();
 
         // Body se data nikalna (courses array lazmi shamil karein)
-        const { id, username, password, role, courses } = await req.json();
+        const { id, username, email, password, role, courses } = await req.json();
 
         if (!id) {
             return NextResponse.json({ error: "User ID is required" }, { status: 400 });
@@ -26,6 +26,23 @@ export async function PUT(req) {
         // 2. Data Update logic
         if (username) user.username = username.toLowerCase();
         if (role) user.role = role;
+
+        const normalizedEmail = (email || (username && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username) ? username : user.email) || "")
+            .trim()
+            .toLowerCase();
+        if (user.role === "STUDENT" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+            return NextResponse.json(
+                { error: "A valid email address is required for student accounts" },
+                { status: 400 }
+            );
+        }
+        if (normalizedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+            return NextResponse.json(
+                { error: "Enter a valid email address" },
+                { status: 400 }
+            );
+        }
+        user.email = normalizedEmail || undefined;
 
         // 👇 Yeh line user ke courses update karegi
         // Agar frontend se courses ki list aayi hai to update karein, warna purani rehne dein

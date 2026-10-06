@@ -11,6 +11,7 @@ export default function SignalsPage({ params: paramsPromise }) {
     const category = params.category.toLowerCase();
     const searchParams = useSearchParams();
     const urlStrategy = searchParams.get("strategy");
+    const urlSignalId = searchParams.get("signal");
 
     const [signals, setSignals] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -36,6 +37,16 @@ export default function SignalsPage({ params: paramsPromise }) {
         };
         fetchSignals();
     }, [category]);
+
+    useEffect(() => {
+        setActiveStrategy(urlStrategy || "ALL");
+    }, [urlStrategy]);
+
+    useEffect(() => {
+        if (!urlSignalId || loading) return;
+        const linkedSignal = signals.find((signal) => signal._id === urlSignalId);
+        if (linkedSignal) setSelectedSignal(linkedSignal);
+    }, [urlSignalId, signals, loading]);
 
     const filteredSignals = activeStrategy === "ALL"
         ? signals : signals.filter(s => s.strategy === activeStrategy);

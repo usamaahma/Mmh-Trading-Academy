@@ -72,9 +72,26 @@ export default function SignalForm({ initialData, onSuccess }) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
-            if (res.ok) onSuccess();
+            const result = await res.json();
+            if (!res.ok) {
+                alert(result.error || "Signal could not be saved.");
+                return;
+            }
+
+            if (method === "POST" && result.email) {
+                const { configured, sent, failed, skipped } = result.email;
+                if (!configured) {
+                    alert("Signal saved, but email was not sent. Check SMTP settings and restart the server.");
+                } else if (sent === 0 && failed === 0) {
+                    alert("Signal saved, but no valid user email addresses were found.");
+                } else {
+                    alert(`Signal saved. Emails accepted: ${sent}; failed: ${failed}; skipped: ${skipped}.`);
+                }
+            }
+            onSuccess();
         } catch (err) {
             console.error("Submit Error:", err);
+            alert("Signal could not be saved. Check the server connection and try again.");
         }
     };
 
