@@ -33,6 +33,28 @@ Use the SMTP credentials and verified sender address from your email provider. S
 
 New student accounts must have a valid email address. For existing accounts, add an address in Admin > Users > Edit. If a user's username is already an email address, it is used as a fallback. Signal creation still succeeds if the email provider is unavailable; delivery errors are logged by the server.
 
+## THC Bot Email Alerts
+
+The bot posts authenticated alerts to `POST /api/thc-alerts`. Configure
+`THC_BOT_API_TOKEN` in the academy's server environment and configure that same
+secret in the bot environment. The bot also needs `THC_ACADEMY_ALERTS_URL`
+pointing to the academy endpoint, ending in `/api/thc-alerts`. Keep the token
+private and use the academy's existing `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`,
+`SMTP_PASS`, `SMTP_FROM`, and `SMTP_SECURE` settings for mail delivery.
+
+The endpoint accepts `eventId`, `alertType`, `symbol`, `timeframe`,
+`direction`, `entry`, `sl`, and `tp`. Alert types are `NEW_THC` and
+`FAILED_THC_REVERSED`; timeframes are M30, H1, H4, or D1. It uses the existing
+recipient selection: each account's email address, falling back to its username
+when that is an email address, with duplicate addresses removed.
+
+Delivery status is stored per event and recipient. Retries skip recipients whose
+message was already accepted by SMTP and retry failed or unfinished recipients.
+The endpoint reports completion only when SMTP has accepted a message for every
+intended recipient; SMTP acceptance does not confirm inbox delivery. A process
+crash after SMTP acceptance but before the delivery status is saved can cause
+that recipient to receive a duplicate on retry.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
