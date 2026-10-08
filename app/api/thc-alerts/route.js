@@ -5,6 +5,7 @@ import { handleThcAlertRequest } from "@/lib/thcAlertService";
 import ThcAlertEvent from "@/models/ThcAlertEvent";
 import ThcEmailDelivery from "@/models/ThcEmailDelivery";
 import User from "@/models/User";
+import { requireAuthenticated } from "@/lib/adminAuth";
 
 export const runtime = "nodejs";
 
@@ -66,11 +67,23 @@ const deliveryStore = {
 };
 
 const eventStore = {
-  async register(eventId, payloadHash) {
+  async register(eventId, payloadHash, alert) {
     try {
       await ThcAlertEvent.updateOne(
         { eventId },
-        { $setOnInsert: { eventId, payloadHash } },
+        {
+          $setOnInsert: {
+            eventId,
+            payloadHash,
+            alertType: alert.alertType,
+            symbol: alert.symbol,
+            timeframe: alert.timeframe,
+            direction: alert.direction,
+            entry: alert.entry,
+            sl: alert.sl,
+            tp: alert.tp,
+          },
+        },
         { upsert: true }
       );
     } catch (error) {
@@ -80,6 +93,31 @@ const eventStore = {
     return event?.payloadHash === payloadHash;
   },
 };
+
+export async function GET() {
+  try {
+    const denied = await requireAuthenticated();
+    if (denied) return denied;
+
+    await dbConnect();
+    const alerts = await ThcAlertEvent.find({
+      alertType: { $in: ["NEW_THC", "FAILED_THC_REVERSED"] },
+      symbol: { $exists: true },
+    })
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .select("eventId alertType symbol timeframe direction entry sl tp createdAt")
+      .lean();
+
+    return NextResponse.json(
+      { alerts },
+      { headers: { "Cache-Control": "no-store" } }
+    );
+  } catch (error) {
+    console.error("THC alert feed fetch failed:", error?.message || "Unknown error");
+    return NextResponse.json({ error: "Fetch failed" }, { status: 500 });
+  }
+}
 
 export async function POST(request) {
   let transporter;

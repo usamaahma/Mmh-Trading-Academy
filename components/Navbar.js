@@ -137,7 +137,8 @@ export default function Navbar() {
       sub: [
         { label: "Scalping", strategy: "SCALPING" },
         { label: "Long Term", strategy: "LONG_TERM" },
-        { label: "Results", strategy: "RESULTS" }
+        { label: "Results", strategy: "RESULTS" },
+        { label: "THC Bot", strategy: "THC_BOT" }
       ]
     },
     {
@@ -204,7 +205,7 @@ export default function Navbar() {
                       </Link>
                       <div className="absolute left-full top-0 ml-2 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-200 translate-x-1 group-hover/sub:translate-x-0">
                         <div className="bg-[#161B22] border border-white/10 p-2 rounded-xl w-44 shadow-2xl">
-                          {cat.sub.map((s) => (
+                          {cat.sub.filter((s) => s.strategy !== "THC_BOT" || status === "authenticated").map((s) => (
                             <Link key={s.label} href={`/signals/${cat.slug}?strategy=${s.strategy}`} prefetch={false} className="block p-2 text-[9px] text-slate-400 hover:text-cyan-400 hover:bg-white/5 rounded-md transition-colors">{s.label}</Link>
                           ))}
                         </div>
@@ -406,6 +407,9 @@ export default function Navbar() {
               </div>
 
               <Link href="/signals/forex" prefetch={false} onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Signals Protocol</Link>
+              {status === "authenticated" && (
+                <Link href="/signals/forex?strategy=THC_BOT" prefetch={false} onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-cyan-300 font-black uppercase text-xl italic">THC Bot Signals</Link>
+              )}
               <Link href="/results" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Performance</Link>
               <Link href="/analysis" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Market Analysis</Link>
               <Link href="/brokers" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Trusted Brokers</Link>
