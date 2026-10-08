@@ -2,29 +2,37 @@
 
 import React, { use, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
-    ShieldAlert, X, Maximize2, Target, BarChart3, TrendingUp, Clock, ChevronRight, Eye
+    ShieldAlert, X, Maximize2, Target, BarChart3, TrendingUp, Clock, ChevronRight, Eye,
+    Activity, ArrowDownRight, ArrowUpRight
 } from "lucide-react";
 
 export default function SignalsPage({ params: paramsPromise }) {
     const params = use(paramsPromise);
     const category = params.category.toLowerCase();
+    const { status: sessionStatus } = useSession();
     const searchParams = useSearchParams();
     const urlStrategy = searchParams.get("strategy");
     const urlSignalId = searchParams.get("signal");
 
     const [signals, setSignals] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [thcAlerts, setThcAlerts] = useState([]);
+    const [thcLoading, setThcLoading] = useState(true);
+    const [thcError, setThcError] = useState("");
     const [activeStrategy, setActiveStrategy] = useState(urlStrategy || "ALL");
     const [selectedSignal, setSelectedSignal] = useState(null);
 
     const strategyConfig = {
-        forex: ["ALL", "SCALPING", "LONG_TERM", "RESULTS"],
+        forex: ["ALL", "SCALPING", "LONG_TERM", "RESULTS", "THC_BOT"],
         stocks: ["ALL", "INTRADAY", "SWING", "ANALYSIS"],
         crypto: ["ALL", "SPOT", "FUTURE"],
     };
 
-    const currentTabs = strategyConfig[category] || ["ALL"];
+    const currentTabs = (strategyConfig[category] || ["ALL"]).filter((tab) =>
+        tab !== "THC_BOT" || sessionStatus === "authenticated"
+    );
 
     useEffect(() => {
         const fetchSignals = async () => {
@@ -39,8 +47,45 @@ export default function SignalsPage({ params: paramsPromise }) {
     }, [category]);
 
     useEffect(() => {
-        setActiveStrategy(urlStrategy || "ALL");
-    }, [urlStrategy]);
+        if (category !== "forex" || sessionStatus !== "authenticated") {
+            setThcLoading(false);
+            return;
+        }
+
+        let active = true;
+        const fetchThcAlerts = async () => {
+            try {
+                const response = await fetch("/api/thc-alerts", { cache: "no-store" });
+                if (!response.ok) throw new Error(response.status === 401
+                    ? "Log in to view THC bot alerts."
+                    : "THC bot alerts could not be loaded.");
+                const data = await response.json();
+                if (active) {
+                    setThcAlerts(Array.isArray(data.alerts) ? data.alerts : []);
+                    setThcError("");
+                }
+            } catch (error) {
+                if (active) setThcError(error.message || "THC bot alerts could not be loaded.");
+            } finally {
+                if (active) setThcLoading(false);
+            }
+        };
+
+        setThcLoading(true);
+        fetchThcAlerts();
+        const intervalId = setInterval(fetchThcAlerts, 30000);
+        return () => {
+            active = false;
+            clearInterval(intervalId);
+        };
+    }, [category, sessionStatus]);
+
+    useEffect(() => {
+        const requestedStrategy = urlStrategy || "ALL";
+        setActiveStrategy(requestedStrategy === "THC_BOT" && sessionStatus !== "authenticated"
+            ? "ALL"
+            : requestedStrategy);
+    }, [urlStrategy, sessionStatus]);
 
     useEffect(() => {
         if (!urlSignalId || loading) return;
@@ -50,6 +95,8 @@ export default function SignalsPage({ params: paramsPromise }) {
 
     const filteredSignals = activeStrategy === "ALL"
         ? signals : signals.filter(s => s.strategy === activeStrategy);
+    const showManualSignals = activeStrategy !== "THC_BOT";
+    const showThcAlerts = category === "forex" && sessionStatus === "authenticated" && ["ALL", "THC_BOT"].includes(activeStrategy);
 
     return (
         <main className="min-h-screen bg-[#010409] text-slate-400 p-4 md:p-12 pt-32">
@@ -74,7 +121,7 @@ export default function SignalsPage({ params: paramsPromise }) {
                 </div>
 
                 {/* 3. MAIN TABLE (Everything At a Glance) */}
-                <div className="bg-[#0D1117] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                {showManualSignals && <div className="bg-[#0D1117] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
@@ -121,7 +168,71 @@ export default function SignalsPage({ params: paramsPromise }) {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </div>}
+
+                {showThcAlerts && (
+                    <section className="mt-12">
+                        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+                            <div>
+                                <div className="mb-2 flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-cyan-400">
+                                    <Activity size={13} /> Automated feed
+                                </div>
+                                <h2 className="text-2xl font-black italic uppercase tracking-tight text-white md:text-3xl">
+                                    THC Bot Alerts<span className="text-cyan-400">.</span>
+                                </h2>
+                            </div>
+                            <p className="text-[9px] font-bold uppercase tracking-widest text-slate-600">Updates every 30 seconds</p>
+                        </div>
+
+                        {thcError && <p role="alert" className="mb-4 rounded-2xl border border-rose-500/20 bg-rose-500/5 p-4 text-sm text-rose-300">{thcError}</p>}
+                        {thcLoading ? (
+                            <div className="rounded-3xl border border-white/10 bg-[#0D1117] p-10 text-center text-xs font-black uppercase tracking-[0.25em] text-cyan-500">Syncing THC alerts...</div>
+                        ) : thcAlerts.length ? (
+                            <div className="grid gap-4 md:grid-cols-2">
+                                {thcAlerts.map((alert) => {
+                                    const isLong = alert.direction === "LONG";
+                                    const directionClass = isLong ? "text-green-400" : "text-red-400";
+                                    const DirectionIcon = isLong ? ArrowUpRight : ArrowDownRight;
+                                    const alertLabel = alert.alertType === "FAILED_THC_REVERSED" ? "Failed THC → Reversed" : "New THC";
+
+                                    return (
+                                        <article key={alert.eventId} className="rounded-3xl border border-white/10 bg-[#0D1117] p-5 shadow-xl md:p-6">
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div>
+                                                    <span className={`mb-3 inline-block rounded-full border px-3 py-1 text-[9px] font-black uppercase tracking-widest ${alert.alertType === "FAILED_THC_REVERSED" ? "border-amber-400/20 bg-amber-400/10 text-amber-300" : "border-cyan-400/20 bg-cyan-400/10 text-cyan-300"}`}>
+                                                        {alertLabel}
+                                                    </span>
+                                                    <h3 className="text-3xl font-black italic uppercase tracking-tight text-white">{alert.symbol}</h3>
+                                                    <p className="mt-1 text-[9px] font-bold uppercase tracking-widest text-slate-500">{alert.timeframe}</p>
+                                                </div>
+                                                <span className={`inline-flex items-center gap-1 rounded-xl bg-white/[0.04] px-3 py-2 text-xs font-black ${directionClass}`}>
+                                                    <DirectionIcon size={15} /> {alert.direction}
+                                                </span>
+                                            </div>
+                                            <dl className="mt-5 grid grid-cols-3 gap-2">
+                                                {[
+                                                    { label: "Entry", value: alert.entry, color: "text-white" },
+                                                    { label: "Stop Loss", value: alert.sl, color: "text-red-400" },
+                                                    { label: "Take Profit", value: alert.tp, color: "text-green-400" },
+                                                ].map((price) => (
+                                                    <div key={price.label} className="rounded-2xl border border-white/5 bg-white/[0.025] p-3">
+                                                        <dt className="text-[8px] font-black uppercase tracking-widest text-slate-500">{price.label}</dt>
+                                                        <dd className={`mt-2 break-all font-mono text-sm font-bold ${price.color}`}>{price.value}</dd>
+                                                    </div>
+                                                ))}
+                                            </dl>
+                                            <p className="mt-4 text-[10px] text-slate-600">{new Date(alert.createdAt).toLocaleString()}</p>
+                                        </article>
+                                    );
+                                })}
+                            </div>
+                        ) : !thcError ? (
+                            <div className="rounded-3xl border border-white/10 bg-[#0D1117] p-10 text-center text-sm text-slate-500">
+                                No new THC bot alerts yet. New alerts will appear here after the bot sends them.
+                            </div>
+                        ) : null}
+                    </section>
+                )}
             </div>
 
             {/* 4. DETAIL MODAL (Image + Full Analysis + All TPs) */}
