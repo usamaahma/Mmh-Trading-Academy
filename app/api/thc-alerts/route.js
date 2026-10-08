@@ -92,6 +92,11 @@ export async function POST(request) {
       transporter = createSmtpTransport();
     },
     getRecipients: async () => {
+      // When THC_TEST_RECIPIENTS is set (comma-separated), only those addresses receive alerts.
+      const testRecipients = (process.env.THC_TEST_RECIPIENTS || "").split(",").filter((email) => email.trim());
+      if (testRecipients.length) {
+        return resolveSignalEmailRecipients(testRecipients.map((email) => ({ email })));
+      }
       const users = await User.find({}).select("email username role").lean();
       return resolveSignalEmailRecipients(users);
     },
