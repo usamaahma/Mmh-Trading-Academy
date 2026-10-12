@@ -17,6 +17,7 @@ import {
   User as UserIcon,
   Lock,
   Bell,
+  Crown,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import Image from "next/image";
@@ -138,7 +139,7 @@ export default function Navbar() {
         { label: "Scalping", strategy: "SCALPING" },
         { label: "Long Term", strategy: "LONG_TERM" },
         { label: "Results", strategy: "RESULTS" },
-        { label: "THC Bot", strategy: "THC_BOT" }
+        { label: "MMH Elite Signals", strategy: "ELITE_SIGNALS" }
       ]
     },
     {
@@ -167,10 +168,10 @@ export default function Navbar() {
     <div className="fixed top-0 left-0 w-full z-[100]">
       {/* --- TOP PROMO BANNER --- */}
       <div className="bg-cyan-500 py-1.5 px-4 shadow-lg relative z-[110]">
-        <div className="flex items-center justify-center gap-3 text-black text-center font-black uppercase tracking-[0.2em] text-[9px] md:text-[10px]">
-          <Gift size={14} className="animate-bounce" />
-          Institutional Protocol: <span className="underline">50% Discount</span>
-          <button className="bg-black text-white px-2 py-0.5 rounded text-[8px] ml-2 uppercase">Claim</button>
+        <div className="flex items-center justify-center gap-2 sm:gap-3 text-black text-center font-black uppercase tracking-[0.12em] sm:tracking-[0.2em] text-[9px] md:text-[10px] whitespace-nowrap">
+          <Gift size={14} className="animate-bounce shrink-0" />
+          <span className="hidden sm:inline">Institutional Protocol:</span> <span className="underline">50% Discount</span>
+          <Link href="/offers" className="bg-black text-white px-2 py-0.5 rounded text-[8px] ml-1 sm:ml-2 uppercase">Claim</Link>
         </div>
       </div>
 
@@ -191,7 +192,18 @@ export default function Navbar() {
 
           {/* --- DESKTOP NAVIGATION --- */}
           <ul className="hidden xl:flex items-center gap-6 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
-            
+            {/* Public: no login needed */}
+            <Link
+              href="/elite-signals"
+              className="relative flex items-center gap-1.5 rounded-full border border-amber-300/50 bg-gradient-to-r from-amber-300/20 to-cyan-400/20 px-3.5 py-1.5 font-black text-amber-200 shadow-[0_0_18px_rgba(252,211,77,0.25)] transition-all hover:from-amber-300 hover:to-cyan-400 hover:text-black"
+            >
+              <span className="absolute -right-0.5 -top-0.5 flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+              </span>
+              <Crown size={12} /> MMH Elite Signals
+            </Link>
+
             {/* Signals Dropdown (Accessible to all logged in users) */}
             <li className="relative group py-2 cursor-pointer hover:text-cyan-400 transition-all">
               <span className="flex items-center gap-1">Signals <ChevronDown size={12} className="group-hover:rotate-180 transition-transform" /></span>
@@ -205,7 +217,7 @@ export default function Navbar() {
                       </Link>
                       <div className="absolute left-full top-0 ml-2 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-200 translate-x-1 group-hover/sub:translate-x-0">
                         <div className="bg-[#161B22] border border-white/10 p-2 rounded-xl w-44 shadow-2xl">
-                          {cat.sub.filter((s) => s.strategy !== "THC_BOT" || status === "authenticated").map((s) => (
+                          {cat.sub.map((s) => (
                             <Link key={s.label} href={`/signals/${cat.slug}?strategy=${s.strategy}`} prefetch={false} className="block p-2 text-[9px] text-slate-400 hover:text-cyan-400 hover:bg-white/5 rounded-md transition-colors">{s.label}</Link>
                           ))}
                         </div>
@@ -372,14 +384,28 @@ export default function Navbar() {
           <div className="flex flex-col h-full pt-32 px-6 pb-10 overflow-y-auto scrollbar-hide">
             
             {session && (
-              <div className="flex items-center gap-4 bg-white/5 p-5 rounded-3xl mb-8 border border-white/10 shadow-2xl">
-                <div className="bg-cyan-500 p-3 rounded-2xl text-black shadow-lg"><UserIcon size={24} /></div>
-                <div>
+              <div className="flex items-center gap-4 bg-white/5 p-4 rounded-3xl mb-8 border border-white/10 shadow-2xl">
+                <div className="bg-cyan-500 p-3 rounded-2xl text-black shadow-lg shrink-0"><UserIcon size={22} /></div>
+                <div className="min-w-0">
                   <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">{session.user.role || 'Member'}</p>
-                  <p className="text-lg text-white font-black uppercase italic tracking-tight">{session.user.username || session.user.name}</p>
+                  <p className="text-sm text-white font-semibold break-all">{session.user.username || session.user.name}</p>
                 </div>
               </div>
             )}
+
+            <Link
+              href="/elite-signals"
+              onClick={() => setIsOpen(false)}
+              className="mb-4 flex items-center justify-between gap-3 rounded-3xl border border-amber-300/40 bg-gradient-to-r from-amber-300/15 to-cyan-400/15 p-5 shadow-[0_0_30px_rgba(252,211,77,0.12)]"
+            >
+              <span className="min-w-0">
+                <span className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-green-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" /> Live · Free access
+                </span>
+                <span className="mt-1 block text-xl font-black uppercase italic text-white">MMH Elite Signals</span>
+              </span>
+              <Crown size={26} className="shrink-0 text-amber-300" />
+            </Link>
 
             <div className="flex flex-col space-y-1">
               <div className="border-b border-white/5">
@@ -407,9 +433,6 @@ export default function Navbar() {
               </div>
 
               <Link href="/signals/forex" prefetch={false} onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Signals Protocol</Link>
-              {status === "authenticated" && (
-                <Link href="/signals/forex?strategy=THC_BOT" prefetch={false} onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-cyan-300 font-black uppercase text-xl italic">THC Bot Signals</Link>
-              )}
               <Link href="/results" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Performance</Link>
               <Link href="/analysis" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Market Analysis</Link>
               <Link href="/brokers" onClick={() => setIsOpen(false)} className="py-5 border-b border-white/5 text-white font-black uppercase text-xl italic">Trusted Brokers</Link>

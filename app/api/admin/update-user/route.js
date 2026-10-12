@@ -12,7 +12,7 @@ export async function PUT(req) {
         await dbConnect();
 
         // Body se data nikalna (courses array lazmi shamil karein)
-        const { id, username, email, password, role, courses } = await req.json();
+        const { id, username, email, password, role, courses, signalsAccess } = await req.json();
 
         if (!id) {
             return NextResponse.json({ error: "User ID is required" }, { status: 400 });
@@ -48,6 +48,10 @@ export async function PUT(req) {
         // Agar frontend se courses ki list aayi hai to update karein, warna purani rehne dein
         if (courses) {
             user.enrolledCourses = courses;
+        }
+
+        if (typeof signalsAccess === "boolean") {
+            user.signalsAccess = signalsAccess;
         }
 
         // 3. Password logic (agar naya password bheja hai toh hash karein)

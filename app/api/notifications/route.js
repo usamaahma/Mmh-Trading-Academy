@@ -13,15 +13,20 @@ export async function GET() {
 
     await dbConnect();
     const recipient = currentUser.user._id;
-    const [notifications, unreadCount] = await Promise.all([
-      Notification.find({ recipient })
-        .sort({ createdAt: -1 })
-        .limit(30)
-        .populate("signal", "heading pair category strategy"),
-      Notification.countDocuments({ recipient, readAt: null }),
-    ]);
+    const notifications = await Notification.find({ recipient })
+      .sort({ createdAt: -1 })
+      .limit(30)
+      .populate("signal", "heading pair category strategy");
 
-    return NextResponse.json({ notifications, unreadCount });
+    // Drop notifications whose signal was deleted so they neither show nor count as unread.
+    const orphanIds = notifications.filter((notification) => !notification.signal).map(({ _id }) => _id);
+    if (orphanIds.length) await Notification.deleteMany({ _id: { $in: orphanIds } });
+    const unreadCount = await Notification.countDocuments({ recipient, readAt: null });
+
+    return NextResponse.json({
+      notifications: notifications.filter((notification) => notification.signal),
+      unreadCount,
+    });
   } catch (error) {
     console.error("Notification fetch error:", error);
     return NextResponse.json({ error: "Could not load notifications" }, { status: 500 });
