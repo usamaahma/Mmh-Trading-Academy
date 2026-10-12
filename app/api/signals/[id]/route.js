@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Signal from "@/models/Signal";
-import { requireAdmin, requireAuthenticated } from "@/lib/adminAuth";
+import Notification from "@/models/Notification";
+import { requireAdmin, requireSignalsAccess } from "@/lib/adminAuth";
 
 // 3. READ SINGLE SIGNAL
 export async function GET(req, { params }) {
     try {
-    const denied = await requireAuthenticated();
+    const denied = await requireSignalsAccess();
     if (denied) return denied;
 
     await dbConnect();
@@ -58,6 +59,8 @@ export async function DELETE(req, { params }) {
 
         const deletedSignal = await Signal.findByIdAndDelete(id);
         if (!deletedSignal) return NextResponse.json({ error: "Not Found" }, { status: 404 });
+
+        await Notification.deleteMany({ signal: deletedSignal._id });
 
         return NextResponse.json({ message: "Signal deleted successfully" });
     } catch (error) {

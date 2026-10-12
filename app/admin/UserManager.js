@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Trash2, Edit3, UserPlus, Users, Loader2, X, BookOpen, CheckCircle2 } from "lucide-react";
+import { Trash2, Edit3, UserPlus, Users, Loader2, X, BookOpen, CheckCircle2, Radio } from "lucide-react";
 
 export default function UserManager() {
   const [users, setUsers] = useState([]);
@@ -15,6 +15,7 @@ export default function UserManager() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("STUDENT");
   const [selectedCourses, setSelectedCourses] = useState([]);
+  const [signalsAccess, setSignalsAccess] = useState(false);
 
   // Users aur Courses fetch karein
   const fetchData = async () => {
@@ -83,7 +84,8 @@ export default function UserManager() {
         email: email.toLowerCase(),
         password,
         role,
-        courses: selectedCourses
+        courses: selectedCourses,
+        signalsAccess
       }),
     });
 
@@ -101,6 +103,7 @@ export default function UserManager() {
     setPassword("");
     setRole("STUDENT");
     setSelectedCourses([]);
+    setSignalsAccess(false);
   };
 
   if (loading) return <div className="flex justify-center p-20"><Loader2 className="animate-spin text-cyan-500" size={40} /></div>;
@@ -108,7 +111,7 @@ export default function UserManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center bg-[#0D1117] p-6 rounded-3xl border border-white/5 shadow-2xl">
+      <div className="flex flex-col sm:flex-row gap-4 justify-between sm:items-center bg-[#0D1117] p-5 sm:p-6 rounded-3xl border border-white/5 shadow-2xl">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-cyan-500/10 rounded-2xl text-cyan-500"><Users size={24} /></div>
           <div>
@@ -118,20 +121,21 @@ export default function UserManager() {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="bg-cyan-500 text-black px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all flex items-center gap-2"
+          className="bg-cyan-500 text-black px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all flex items-center justify-center gap-2"
         >
           <UserPlus size={16} /> Add New User
         </button>
       </div>
 
       {/* Users Table */}
-      <div className="bg-[#0D1117] rounded-3xl border border-white/5 overflow-hidden shadow-2xl">
-        <table className="w-full text-left border-collapse">
+      <div className="bg-[#0D1117] rounded-3xl border border-white/5 overflow-x-auto shadow-2xl">
+        <table className="w-full min-w-[640px] text-left border-collapse">
           <thead>
             <tr className="bg-white/5 text-[9px] uppercase font-black tracking-[0.2em] text-slate-500">
               <th className="p-5">Credential ID</th>
               <th className="p-5">Email</th>
               <th className="p-5">Access Role</th>
+              <th className="p-5">Signals</th>
               <th className="p-5 text-right">Operation</th>
             </tr>
           </thead>
@@ -148,6 +152,13 @@ export default function UserManager() {
                     {user.role}
                   </span>
                 </td>
+                <td className="p-5">
+                  {user.role === "ADMIN" || user.signalsAccess ? (
+                    <span className="px-3 py-1 rounded-lg text-[9px] font-black tracking-tighter bg-green-500/10 text-green-500">ENABLED</span>
+                  ) : (
+                    <span className="px-3 py-1 rounded-lg text-[9px] font-black tracking-tighter bg-white/5 text-slate-500">NO ACCESS</span>
+                  )}
+                </td>
                 <td className="p-5 text-right">
                   <div className="flex justify-end gap-2">
                     <button onClick={() => {
@@ -155,7 +166,8 @@ export default function UserManager() {
                       setUsername(user.username);
                       setEmail(user.email || (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.username) ? user.username : ""));
                       setRole(user.role);
-                      setSelectedCourses(user.enrolledCourses || []);
+                      setSelectedCourses((user.enrolledCourses || []).filter(Boolean).map((course) => course._id || course));
+                      setSignalsAccess(user.signalsAccess === true);
                       setShowAddModal(true);
                     }} className="p-2.5 bg-white/5 rounded-xl text-slate-400 hover:text-cyan-500 transition-colors">
                       <Edit3 size={16} />
@@ -179,8 +191,8 @@ export default function UserManager() {
 
       {/* Modal for Add/Edit */}
       {showAddModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-[#0D1117] border border-white/10 w-full max-w-lg rounded-[2.5rem] p-10 relative shadow-2xl my-auto">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-[#0D1117] border border-white/10 w-full max-w-lg rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 relative shadow-2xl my-auto">
             <button onClick={closeModal} className="absolute top-6 right-6 text-slate-500 hover:text-white"><X size={24} /></button>
 
             <h2 className="text-2xl font-black italic uppercase text-white mb-6">
@@ -188,7 +200,7 @@ export default function UserManager() {
             </h2>
 
             <form onSubmit={handleCreateOrUpdate} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[9px] font-black text-slate-500 uppercase ml-2">Username</label>
                   <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full bg-[#010409] border border-white/10 rounded-2xl p-4 text-white font-bold outline-none focus:border-cyan-500/50" placeholder="TRADER_ID" required />
@@ -211,6 +223,29 @@ export default function UserManager() {
                   <option value="ADMIN">ADMIN ACCESS</option>
                 </select>
               </div>
+
+              {/* Signals access (admins always have it) */}
+              <button
+                type="button"
+                role="switch"
+                aria-checked={role === "ADMIN" || signalsAccess}
+                disabled={role === "ADMIN"}
+                onClick={() => setSignalsAccess((value) => !value)}
+                className={`w-full flex items-center justify-between gap-3 p-4 rounded-2xl border transition-all text-left disabled:cursor-not-allowed ${role === "ADMIN" || signalsAccess ? "bg-cyan-500/10 border-cyan-500/50" : "bg-[#010409] border-white/10 hover:border-white/20"}`}
+              >
+                <span className="flex items-center gap-3 min-w-0">
+                  <Radio size={16} className={role === "ADMIN" || signalsAccess ? "text-cyan-500 shrink-0" : "text-slate-600 shrink-0"} />
+                  <span className="min-w-0">
+                    <span className="block text-[11px] font-black uppercase tracking-wider text-white">Signals Access</span>
+                    <span className="block text-[9px] text-slate-500 mt-0.5">
+                      {role === "ADMIN" ? "Admins always have access" : "Allow this user to view signals"}
+                    </span>
+                  </span>
+                </span>
+                <span className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${role === "ADMIN" || signalsAccess ? "bg-cyan-500" : "bg-white/10"}`}>
+                  <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all ${role === "ADMIN" || signalsAccess ? "left-[22px]" : "left-0.5"}`} />
+                </span>
+              </button>
 
               {/* Course Selection Area */}
               <div className="space-y-2">

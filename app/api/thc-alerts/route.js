@@ -5,7 +5,6 @@ import { handleThcAlertRequest } from "@/lib/thcAlertService";
 import ThcAlertEvent from "@/models/ThcAlertEvent";
 import ThcEmailDelivery from "@/models/ThcEmailDelivery";
 import User from "@/models/User";
-import { requireAuthenticated } from "@/lib/adminAuth";
 
 export const runtime = "nodejs";
 
@@ -94,11 +93,9 @@ const eventStore = {
   },
 };
 
+// Public feed for the MMH Elite Signals page; no login required.
 export async function GET() {
   try {
-    const denied = await requireAuthenticated();
-    if (denied) return denied;
-
     await dbConnect();
     const alerts = await ThcAlertEvent.find({
       alertType: { $in: ["NEW_THC", "FAILED_THC_REVERSED"] },
