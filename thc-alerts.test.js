@@ -8,7 +8,7 @@ const alert = {
   eventId: "event-123",
   alertType: "NEW_THC",
   symbol: "XAUUSD",
-  timeframe: "H1",
+  // timeframe: "H1",
   direction: "LONG",
   entry: 2350.25,
   sl: 2340.25,
@@ -131,7 +131,7 @@ test("formats email with the required subject and only six body fields", () => {
   assert.equal(content.subject, "🔥 NEW THC");
   assert.equal(content.text, [
     "Symbol: XAUUSD",
-    "Timeframe: H1",
+    // "Timeframe: H1",
     "Direction: LONG",
     "Entry: 2350.25",
     "SL: 2340.25",
