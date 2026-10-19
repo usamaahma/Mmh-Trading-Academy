@@ -73,7 +73,7 @@ export default function EliteSignalsFeed({ showHeading = true }) {
                                             {isReversed ? "Breaker" : "New Elite Signal"}
                                         </span>
                                         <h3 className="break-words text-2xl font-black italic uppercase tracking-tight text-white sm:text-3xl">{alert.symbol}</h3>
-                                        <p className="mt-1 text-[9px] font-bold uppercase tracking-widest text-slate-500">{alert.timeframe}</p>
+                                        {/* <p className="mt-1 text-[9px] font-bold uppercase tracking-widest text-slate-500">{alert.timeframe}</p> */}
                                     </div>
                                     <span className={`inline-flex shrink-0 items-center gap-1 rounded-xl bg-white/[0.04] px-3 py-2 text-xs font-black ${directionClass}`}>
                                         <DirectionIcon size={15} /> {alert.direction}

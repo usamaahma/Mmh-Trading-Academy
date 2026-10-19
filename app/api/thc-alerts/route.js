@@ -76,7 +76,7 @@ const eventStore = {
             payloadHash,
             alertType: alert.alertType,
             symbol: alert.symbol,
-            timeframe: alert.timeframe,
+            // timeframe: alert.timeframe,
             direction: alert.direction,
             entry: alert.entry,
             sl: alert.sl,
