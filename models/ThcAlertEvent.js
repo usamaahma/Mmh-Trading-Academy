@@ -17,6 +17,8 @@ const thcAlertEventSchema = new mongoose.Schema(
 
 thcAlertEventSchema.index({ eventId: 1 }, { unique: true });
 thcAlertEventSchema.index({ createdAt: -1 });
+// MongoDB auto-deletes alerts 30 days after they were created.
+thcAlertEventSchema.index({ createdAt: 1 }, { expireAfterSeconds: 30 * 24 * 60 * 60 });
 
 export default mongoose.models.ThcAlertEvent ||
   mongoose.model("ThcAlertEvent", thcAlertEventSchema);
