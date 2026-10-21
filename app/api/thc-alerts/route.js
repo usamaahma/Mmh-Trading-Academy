@@ -97,12 +97,15 @@ const eventStore = {
 export async function GET() {
   try {
     await dbConnect();
+    // Only the last 30 days; MongoDB's TTL cleanup can lag by a minute or so.
+    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const alerts = await ThcAlertEvent.find({
       alertType: { $in: ["NEW_THC", "FAILED_THC_REVERSED"] },
       symbol: { $exists: true },
+      createdAt: { $gte: since },
     })
       .sort({ createdAt: -1 })
-      .limit(100)
+      .limit(500)
       .select("eventId alertType symbol timeframe direction entry sl tp createdAt")
       .lean();
 
