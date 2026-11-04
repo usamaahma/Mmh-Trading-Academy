@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { handleThcAlertRequest } from "./lib/thcAlertService.js";
 import { thcEmailContent } from "./lib/signalEmail.js";
+import ThcAlertEvent from "./models/ThcAlertEvent.js";
 import ThcEmailDelivery from "./models/ThcEmailDelivery.js";
 
 const alert = {
@@ -124,6 +125,21 @@ test("rejects malformed or extra payload fields without sending", async () => {
   assert.equal(extraField.status, 400);
   assert.equal(invalidDirection.status, 400);
   assert.equal(sends, 0);
+});
+
+test("accepts the APEX XAUUSD M15 payload and persists its timeframe enum", async () => {
+  const m15Alert = {
+    ...alert,
+    eventId: "0123456789abcdef0123456789abcdef",
+    timeframe: "M15",
+  };
+
+  assert.ok(ThcAlertEvent.schema.path("timeframe").enumValues.includes("M15"));
+  const result = await handleThcAlertRequest(request(m15Alert), dependencies());
+
+  assert.equal(result.status, 200);
+  assert.equal(result.body.complete, true);
+  assert.equal(result.body.eventId, m15Alert.eventId);
 });
 
 test("formats email with the required subject and only six body fields", () => {
