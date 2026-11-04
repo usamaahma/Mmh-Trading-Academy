@@ -44,7 +44,7 @@ private and use the academy's existing `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`,
 
 The endpoint accepts `eventId`, `alertType`, `symbol`, `timeframe`,
 `direction`, `entry`, `sl`, and `tp`. Alert types are `NEW_THC` and
-`FAILED_THC_REVERSED`; timeframes are M30, H1, H4, or D1. It uses the existing
+`FAILED_THC_REVERSED`; timeframes are M15, M30, H1, H4, or D1. It uses the existing
 recipient selection: each account's email address, falling back to its username
 when that is an email address, with duplicate addresses removed.
 
