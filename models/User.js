@@ -28,6 +28,8 @@ const UserSchema = new mongoose.Schema({
       ref: "Course" // Yeh "Course" aapke Course model ka naam hona chahiye
     }
   ],
+  // Admin grants this per user; without it a student cannot open the signals pages.
+  signalsAccess: { type: Boolean, default: false },
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model("User", UserSchema);

@@ -5,7 +5,6 @@ import { handleThcAlertRequest } from "@/lib/thcAlertService";
 import ThcAlertEvent from "@/models/ThcAlertEvent";
 import ThcEmailDelivery from "@/models/ThcEmailDelivery";
 import User from "@/models/User";
-import { requireAuthenticated } from "@/lib/adminAuth";
 
 export const runtime = "nodejs";
 
@@ -77,7 +76,7 @@ const eventStore = {
             payloadHash,
             alertType: alert.alertType,
             symbol: alert.symbol,
-            timeframe: alert.timeframe,
+            // timeframe: alert.timeframe,
             direction: alert.direction,
             entry: alert.entry,
             sl: alert.sl,
@@ -94,18 +93,19 @@ const eventStore = {
   },
 };
 
+// Public feed for the MMH Elite Signals page; no login required.
 export async function GET() {
   try {
-    const denied = await requireAuthenticated();
-    if (denied) return denied;
-
     await dbConnect();
+    // Only the last 30 days; MongoDB's TTL cleanup can lag by a minute or so.
+    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const alerts = await ThcAlertEvent.find({
       alertType: { $in: ["NEW_THC", "FAILED_THC_REVERSED"] },
       symbol: { $exists: true },
+      createdAt: { $gte: since },
     })
       .sort({ createdAt: -1 })
-      .limit(100)
+      .limit(500)
       .select("eventId alertType symbol timeframe direction entry sl tp createdAt")
       .lean();
 

@@ -4,12 +4,12 @@ import Signal from "@/models/Signal";
 import Notification from "@/models/Notification";
 import User from "@/models/User";
 import { emailSignalToUsers } from "@/lib/signalEmail";
-import { requireAdmin, requireAuthenticated } from "@/lib/adminAuth";
+import { requireAdmin, requireSignalsAccess } from "@/lib/adminAuth";
 
 // 1. READ ALL (With Smart Filtering)
 export async function GET(req) {
     try {
-    const denied = await requireAuthenticated();
+    const denied = await requireSignalsAccess();
     if (denied) return denied;
 
     await dbConnect();
@@ -49,7 +49,10 @@ export async function POST(req) {
         const newSignal = await Signal.create(body);
         let emailResult = { configured: false, sent: 0, failed: 0, skipped: 0 };
 
-        const recipients = await User.find({}).select("_id email username role").lean();
+        // Only users the admin has granted signals access (plus admins) are notified.
+        const recipients = await User.find({ $or: [{ role: "ADMIN" }, { signalsAccess: true }] })
+            .select("_id email username role")
+            .lean();
         if (recipients.length) {
             try {
                 await Notification.insertMany(

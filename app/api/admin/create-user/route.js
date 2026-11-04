@@ -13,7 +13,7 @@ export async function POST(req) {
         await dbConnect();
 
         // 2. Body se data nikalna (courses array bhi shamil hai)
-        const { username, email, password, role, courses } = await req.json();
+        const { username, email, password, role, courses, signalsAccess } = await req.json();
 
         // 3. Basic validation
         if (!username || !password) {
@@ -58,7 +58,8 @@ export async function POST(req) {
             password: hashedPassword,
             role: normalizedRole,
             // Agar front-end se courses array aayi hai to wo save hogi, warna empty array []
-            enrolledCourses: courses || []
+            enrolledCourses: courses || [],
+            signalsAccess: signalsAccess === true
         });
 
         return NextResponse.json({
@@ -68,7 +69,8 @@ export async function POST(req) {
                 id: newUser._id,
                 username: newUser.username,
                 role: newUser.role,
-                enrolledCourses: newUser.enrolledCourses
+                enrolledCourses: newUser.enrolledCourses,
+                signalsAccess: newUser.signalsAccess
             }
         });
 

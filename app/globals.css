@@ -19,8 +19,27 @@
   }
 }
 
+/* The whole site is dark; a light body showed white gaps under short pages on mobile. */
+html,
 body {
-  background: var(--background);
+  background: #010409;
+}
+
+body {
+  overflow-x: clip;
+}
+
+.no-scrollbar,
+.scrollbar-hide {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
