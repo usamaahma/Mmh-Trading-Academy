@@ -144,7 +144,7 @@ test("accepts M15, M30, H1, H4 and D1 for new and reversed XAUUSD alerts", async
 
 test("formats email with the required subject and only six body fields", () => {
   const content = thcEmailContent(alert);
-  assert.equal(content.subject, "🔥 NEW THC");
+  assert.equal(content.subject, "🔥 NEW Elite Signal");
   assert.equal(content.text, [
     "Symbol: XAUUSD",
     // "Timeframe: H1",
@@ -154,7 +154,7 @@ test("formats email with the required subject and only six body fields", () => {
     "TP: 2370.25",
   ].join("\n"));
   assert.equal(thcEmailContent({ ...alert, alertType: "FAILED_THC_REVERSED" }).subject,
-    "🔄 FAILED THC → REVERSED");
+    "Breaker");
 });
 
 test("delivery ledger has a unique event and recipient index", () => {
