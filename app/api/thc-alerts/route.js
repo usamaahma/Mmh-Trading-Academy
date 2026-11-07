@@ -106,7 +106,7 @@ export async function GET() {
     })
       .sort({ createdAt: -1 })
       .limit(500)
-      .select("eventId alertType symbol timeframe direction entry sl tp createdAt")
+      .select("eventId alertType symbol direction entry sl tp createdAt")
       .lean();
 
     return NextResponse.json(
