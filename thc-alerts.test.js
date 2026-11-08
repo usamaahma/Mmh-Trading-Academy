@@ -9,7 +9,7 @@ const alert = {
   eventId: "event-123",
   alertType: "NEW_THC",
   symbol: "XAUUSD",
-  // timeframe: "H1",
+  timeframe: "H1",
   direction: "LONG",
   entry: 2350.25,
   sl: 2340.25,
@@ -121,30 +121,30 @@ test("rejects malformed or extra payload fields without sending", async () => {
   const deps = dependencies({ sendMail: async () => { sends += 1; return true; } });
   const extraField = await handleThcAlertRequest(request({ ...alert, detail: "not allowed" }), deps);
   const invalidDirection = await handleThcAlertRequest(request({ ...alert, direction: "BULLISH" }), deps);
+  const invalidTimeframe = await handleThcAlertRequest(request({ ...alert, timeframe: "M5" }), deps);
 
   assert.equal(extraField.status, 400);
   assert.equal(invalidDirection.status, 400);
+  assert.equal(invalidTimeframe.status, 400);
   assert.equal(sends, 0);
 });
 
-test("accepts the APEX XAUUSD M15 payload and persists its timeframe enum", async () => {
-  const m15Alert = {
-    ...alert,
-    eventId: "0123456789abcdef0123456789abcdef",
-    timeframe: "M15",
-  };
-
-  assert.ok(ThcAlertEvent.schema.path("timeframe").enumValues.includes("M15"));
-  const result = await handleThcAlertRequest(request(m15Alert), dependencies());
-
-  assert.equal(result.status, 200);
-  assert.equal(result.body.complete, true);
-  assert.equal(result.body.eventId, m15Alert.eventId);
+test("accepts M15, M30, H1, H4 and D1 for new and reversed XAUUSD alerts", async () => {
+  assert.deepEqual(ThcAlertEvent.schema.path("timeframe").enumValues, ["M15", "M30", "H1", "H4", "D1"]);
+  for (const timeframe of ["M15", "M30", "H1", "H4", "D1"]) {
+    for (const alertType of ["NEW_THC", "FAILED_THC_REVERSED"]) {
+      const payload = { ...alert, eventId: `${timeframe}-${alertType}`, alertType, timeframe };
+      const result = await handleThcAlertRequest(request(payload), dependencies());
+      assert.equal(result.status, 200);
+      assert.equal(result.body.complete, true);
+      assert.equal(result.body.eventId, payload.eventId);
+    }
+  }
 });
 
 test("formats email with the required subject and only six body fields", () => {
   const content = thcEmailContent(alert);
-  assert.equal(content.subject, "🔥 NEW THC");
+  assert.equal(content.subject, "🔥 NEW Elite Signal");
   assert.equal(content.text, [
     "Symbol: XAUUSD",
     // "Timeframe: H1",
@@ -154,7 +154,7 @@ test("formats email with the required subject and only six body fields", () => {
     "TP: 2370.25",
   ].join("\n"));
   assert.equal(thcEmailContent({ ...alert, alertType: "FAILED_THC_REVERSED" }).subject,
-    "🔄 FAILED THC → REVERSED");
+    "Breaker");
 });
 
 test("delivery ledger has a unique event and recipient index", () => {
@@ -187,7 +187,7 @@ test("rejects a reused event ID when its payload changes", async () => {
   let sends = 0;
   const deps = dependencies({ sendMail: async () => { sends += 1; return true; } });
   const first = await handleThcAlertRequest(request(), deps);
-  const conflict = await handleThcAlertRequest(request({ ...alert, entry: 2351 }), deps);
+  const conflict = await handleThcAlertRequest(request({ ...alert, timeframe: "M30" }), deps);
 
   assert.equal(first.body.complete, true);
   assert.equal(conflict.status, 409);

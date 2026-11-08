@@ -76,7 +76,7 @@ const eventStore = {
             payloadHash,
             alertType: alert.alertType,
             symbol: alert.symbol,
-            // timeframe: alert.timeframe,
+            timeframe: alert.timeframe,
             direction: alert.direction,
             entry: alert.entry,
             sl: alert.sl,
@@ -106,7 +106,7 @@ export async function GET() {
     })
       .sort({ createdAt: -1 })
       .limit(500)
-      .select("eventId alertType symbol timeframe direction entry sl tp createdAt")
+      .select("eventId alertType symbol direction entry sl tp createdAt")
       .lean();
 
     return NextResponse.json(
