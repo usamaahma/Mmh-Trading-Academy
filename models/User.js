@@ -30,6 +30,8 @@ const UserSchema = new mongoose.Schema({
   ],
   // Admin grants this per user; without it a student cannot open the signals pages.
   signalsAccess: { type: Boolean, default: false },
+  // SELF = user registered from the public signup page; ADMIN = created by an admin.
+  signupSource: { type: String, enum: ["ADMIN", "SELF"], default: "ADMIN" },
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model("User", UserSchema);

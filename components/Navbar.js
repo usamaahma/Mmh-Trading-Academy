@@ -28,6 +28,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [courses, setCourses] = useState([]);
+  const [coursesLoaded, setCoursesLoaded] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notificationsOwnerId, setNotificationsOwnerId] = useState(null);
@@ -39,13 +40,15 @@ export default function Navbar() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await fetch("/api/course");
+        const res = await fetch("/api/course?scope=menu");
         const json = await res.json();
         if (json.success) {
           setCourses(json.data);
         }
       } catch (err) {
         console.error("Navbar courses fetch error:", err);
+      } finally {
+        setCoursesLoaded(true);
       }
     };
     fetchCourses();
@@ -258,6 +261,8 @@ export default function Navbar() {
                         </Link>
                       );
                     })
+                  ) : coursesLoaded ? (
+                    <p className="p-4 text-[8px] text-slate-600 font-black uppercase tracking-widest text-center">No Courses Available</p>
                   ) : (
                     <p className="p-4 text-[8px] text-slate-600 animate-pulse font-black uppercase tracking-widest text-center">Initialising Data...</p>
                   )}
@@ -368,9 +373,14 @@ export default function Navbar() {
                 Logout
               </button>
             ) : (
-              <Link href="/login" className="hidden sm:block bg-cyan-500 text-black px-6 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-white transition-all shadow-lg shadow-cyan-500/20">
-                Join Academy
-              </Link>
+              <div className="hidden sm:flex items-center gap-2">
+                <Link href="/login" className="bg-cyan-500 text-black px-6 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-white transition-all shadow-lg shadow-cyan-500/20">
+                  Join Academy
+                </Link>
+                <Link href="/signup" className="bg-white/5 border border-white/10 text-white px-5 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+                  Sign Up
+                </Link>
+              </div>
             )}
 
             <button onClick={() => setIsOpen(!isOpen)} className="xl:hidden text-white z-[120] p-2 outline-none">
@@ -446,9 +456,14 @@ export default function Navbar() {
                   <LogOut size={16} /> Sign Out System
                 </button>
               ) : (
+                <>
                 <Link href="/login" onClick={() => setIsOpen(false)} className="bg-cyan-500 text-black w-full py-5 rounded-2xl font-black text-center uppercase tracking-widest text-xs shadow-2xl block shadow-cyan-500/20">
                   Initialise Member Access
                 </Link>
+                <Link href="/signup" onClick={() => setIsOpen(false)} className="mt-3 bg-white/5 border border-white/10 text-white w-full py-5 rounded-2xl font-black text-center uppercase tracking-widest text-xs block">
+                  Create New Account
+                </Link>
+                </>
               )}
             </div>
 

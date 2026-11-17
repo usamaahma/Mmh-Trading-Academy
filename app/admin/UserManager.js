@@ -145,6 +145,11 @@ export default function UserManager() {
                 <td className="p-5">
                   <p className="text-white font-bold uppercase tracking-wider">{user.username}</p>
                   <p className="text-[8px] text-slate-600 mt-1 uppercase">UID: {user._id.slice(-8)}</p>
+                  {user.signupSource === "SELF" && (
+                    <span className="inline-block mt-1.5 px-2 py-0.5 rounded-md text-[8px] font-black tracking-wider bg-purple-500/10 text-purple-400">
+                      SELF SIGNUP{user.createdAt ? ` · ${new Date(user.createdAt).toLocaleDateString()}` : ""}
+                    </span>
+                  )}
                 </td>
                 <td className="p-5 text-xs text-slate-400">{user.email || user.username}</td>
                 <td className="p-5">

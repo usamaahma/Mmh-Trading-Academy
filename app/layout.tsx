@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   // Login page par bhi Navbar/Footer nahi dikhana chahiye aksar
   const isAdminPage = pathname.startsWith("/admin");
-  const isLoginPage = pathname === "/login";
+  const isLoginPage = pathname === "/login" || pathname === "/signup";
   const hideLayout = isAdminPage || isLoginPage;
 
   return (

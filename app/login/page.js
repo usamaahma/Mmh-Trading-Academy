@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import BackToHome from "@/components/BackToHome";
 import { Loader2, Lock, User } from "lucide-react";
 
 export default function LoginPage() {
@@ -36,7 +38,8 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#010409] flex items-center justify-center px-6">
+        <div className="min-h-screen bg-[#010409] relative flex items-center justify-center px-6 pt-24 pb-16">
+            <BackToHome />
             <div className="w-full max-w-md bg-[#0D1117] border border-white/5 p-10 rounded-[2rem] shadow-2xl">
                 <div className="text-center mb-10">
                     <h1 className="text-3xl font-black italic uppercase text-white tracking-tighter mb-2">
@@ -55,7 +58,7 @@ export default function LoginPage() {
                     )}
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase ml-2 tracking-widest">Username</label>
+                        <label className="text-[10px] font-black text-slate-400 uppercase ml-2 tracking-widest">Username or Email</label>
                         <div className="relative">
                             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={16} />
                             <input
@@ -93,8 +96,18 @@ export default function LoginPage() {
                     </button>
                 </form>
 
-                <p className="text-center mt-8 text-[9px] font-bold text-slate-600 uppercase tracking-widest">
-                    No Access?{" "}
+                <p className="text-center mt-8 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    New here?{" "}
+                    <Link
+                        href="/signup"
+                        className="text-cyan-500 hover:text-white transition-all duration-300 border-b border-cyan-500/20 hover:border-white pb-0.5"
+                    >
+                        Create an Account
+                    </Link>
+                </p>
+
+                <p className="text-center mt-4 text-[9px] font-bold text-slate-600 uppercase tracking-widest">
+                    Need Help?{" "}
                     <a
                         href="https://wa.me/966549357534?text=Assalam%20o%20Alaikum%20Admin,%20I%20need%20access%20to%20the%20MMH%20Trading%20Academy%20Terminal."
                         target="_blank"
