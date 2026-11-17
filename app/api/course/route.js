@@ -3,9 +3,16 @@ import { NextResponse } from "next/server";
 import Course from "@/models/Course";
 import { getCurrentUser, requireAdmin } from "@/lib/adminAuth";
 
-export async function GET() {
+export async function GET(req) {
   try {
     await dbConnect();
+
+    // Navbar menu: every visitor sees all course names (locked ones show a lock icon).
+    // Only names and IDs are exposed; course content stays protected.
+    if (req?.nextUrl?.searchParams.get("scope") === "menu") {
+      const menuCourses = await Course.find({}).select("courseName _id").sort({ createdAt: -1 }).lean();
+      return NextResponse.json({ success: true, data: menuCourses });
+    }
 
     // 1. Session check karein (lekin block nahi karna guest ko)
     const currentUser = await getCurrentUser();

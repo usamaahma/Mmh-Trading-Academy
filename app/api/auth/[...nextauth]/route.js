@@ -15,9 +15,12 @@ export const authOptions = {
             async authorize(credentials) {
                 await dbConnect();
 
-                const user = await User.findOne({
-                    username: credentials.username.toLowerCase()
-                });
+                // Login with either username or email
+                const identifier = String(credentials?.username || "").trim().toLowerCase();
+                if (!identifier || !credentials?.password) throw new Error("Invalid Username or Password");
+
+                const user = await User.findOne({ username: identifier })
+                    || await User.findOne({ email: identifier });
 
                 if (!user) throw new Error("Invalid Username or Password");
 

@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { signOut } from "next-auth/react"; // 👈 NextAuth ka logout function
 import {
   LayoutDashboard,
@@ -12,6 +13,7 @@ import {
   Inbox,
   User,
   Home,
+  Globe,
 } from "lucide-react";
 
 export default function AdminSidebar({ activeTab, setActiveTab }) {
@@ -64,7 +66,13 @@ export default function AdminSidebar({ activeTab, setActiveTab }) {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-white/5">
+      <div className="p-4 border-t border-white/5 space-y-1">
+        <Link
+          href="/"
+          className="w-full flex items-center gap-3 px-4 py-3 text-slate-400 text-[10px] font-black uppercase hover:bg-white/5 hover:text-cyan-400 rounded-xl transition-all"
+        >
+          <Globe size={18} /> View Website
+        </Link>
         {/* 👈 Logout Button */}
         <button
           onClick={handleLogout}
