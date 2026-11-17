@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import PopupForm from "@/components/leads";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 // Types for API data
 interface AnalysisItem {
@@ -70,6 +71,7 @@ interface LandingData {
 }
 
 export default function ProfessionalForexLanding() {
+  const { status: sessionStatus } = useSession();
   const scrollRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState<boolean>(false);
@@ -329,15 +331,17 @@ export default function ProfessionalForexLanding() {
                 onClick={() => openPopup("cta")}
                 className="bg-cyan-500 text-black px-6 py-4 rounded font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-all"
               >
-                Get Premium Access
+                Join Learning Batch
               </button>
-              <Link href="/contact-us">
-                <button
+              {/* Sign Up only for visitors; hidden once the user is logged in */}
+              {sessionStatus === "unauthenticated" && (
+                <Link
+                  href="/signup"
                   className="bg-white/5 border border-white/10 text-white px-8 py-4 rounded font-bold text-[10px] uppercase tracking-widest hover:bg-white/10 hover:border-cyan-500/30 transition-all shadow-sm"
                 >
-                  Contact Us
-                </button>
-              </Link>
+                  Sign Up
+                </Link>
+              )}
             </div>
           </div>
 
